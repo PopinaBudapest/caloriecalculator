@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calorie Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Calorie Calculator</h1>
+    <button id="addFoodBtn" class="btn">Add Food</button>
+  </header>
+
+  <main class="layout">
+    <aside class="summary" aria-live="polite">
+      <h2>Daily Summary</h2>
+      <table>
+        <tbody>
+          <tr><th>Calories</th><td><span id="sum-kcal">0</span> <span class="pct" id="sum-kcal-pct">0%</span></td></tr>
+          <tr><th>Protein (g)</th><td><span id="sum-protein">0</span> <span class="pct" id="sum-protein-pct">0%</span></td></tr>
+          <tr><th>Fat (g)</th><td><span id="sum-fat">0</span> <span class="pct" id="sum-fat-pct">0%</span></td></tr>
+          <tr><th>Sat fat (g)</th><td><span id="sum-satfat">0</span> <span class="pct" id="sum-satfat-pct">0%</span></td></tr>
+          <tr><th>Carbs (g)</th><td><span id="sum-carbs">0</span> <span class="pct" id="sum-carbs-pct">0%</span></td></tr>
+          <tr><th>Sugar (g)</th><td><span id="sum-sugar">0</span> <span class="pct" id="sum-sugar-pct">0%</span></td></tr>
+          <tr><th>Fiber (g)</th><td><span id="sum-fiber">0</span> <span class="pct" id="sum-fiber-pct">0%</span></td></tr>
+          <tr><th>Salt (g)</th><td><span id="sum-salt">0</span> <span class="pct" id="sum-salt-pct">0%</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="summary-actions">
+        <button id="resetBtn" class="btn btn-ghost">Reset day</button>
+      </div>
+
+      <div class="summary-actions">
+        <button id="saveFileBtn" class="btn">Save to file</button>
+        <button id="loadFileBtn" class="btn btn-ghost">Load from file</button>
+        <input id="loadFileInput" type="file" accept="application/json" hidden />
+      </div>
+    </aside>
+
+    <section class="boards">
+      <section class="board" data-cat="breakfast">
+        <header class="board__head">
+          <span>Breakfast</span>
+          <button class="icon-btn reset-cat" data-reset="breakfast">Reset</button>
+        </header>
+        <div id="cards-breakfast" class="cards"></div>
+      </section>
+
+      <section class="board" data-cat="lunch">
+        <header class="board__head">
+          <span>Lunch</span>
+          <button class="icon-btn reset-cat" data-reset="lunch">Reset</button>
+        </header>
+        <div id="cards-lunch" class="cards"></div>
+      </section>
+
+      <section class="board" data-cat="dinner">
+        <header class="board__head">
+          <span>Dinner</span>
+          <button class="icon-btn reset-cat" data-reset="dinner">Reset</button>
+        </header>
+        <div id="cards-dinner" class="cards"></div>
+      </section>
+
+      <section class="board" data-cat="other">
+        <header class="board__head">
+          <span>Others</span>
+          <button class="icon-btn reset-cat" data-reset="other">Reset</button>
+        </header>
+        <div id="cards-other" class="cards"></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="foodDialog">
+    <form id="foodForm" class="dialog-form">
+      <h3 id="dialogTitle">Add Food</h3>
+
+      <label>Name
+        <input required name="name" placeholder="Milk (3.5%)" />
+      </label>
+
+      <div class="grid3">
+        <label>Category
+          <select name="category" required>
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+            <option value="other">Others</option>
+          </select>
+        </label>
+        <label>Unit
+          <select name="unit">
+            <option value="ml">ml</option>
+            <option value="g">g</option>
+          </select>
+        </label>
+        <label>Slider max (amount)
+          <input type="number" name="max" value="1000" min="50" step="50" required />
+        </label>
+      </div>
+
+      <p class="hint">Values per 100 of the chosen unit:</p>
+      <div class="grid2">
+        <label>Kcal/100 <input type="number" name="kcal" required step="0.1" /></label>
+        <label>Protein g/100 <input type="number" name="protein" required step="0.1" /></label>
+        <label>Fat g/100 <input type="number" name="fat" required step="0.1" /></label>
+        <label>Sat fat g/100 <input type="number" name="satFat" required step="0.1" /></label>
+        <label>Carbs g/100 <input type="number" name="carbs" required step="0.1" /></label>
+        <label>Sugar g/100 <input type="number" name="sugar" required step="0.1" /></label>
+        <label>Fiber g/100 <input type="number" name="fiber" required step="0.1" /></label>
+        <label>Salt g/100 <input type="number" name="salt" required step="0.1" /></label>
+      </div>
+
+      <menu>
+        <button type="button" id="cancelBtn" class="btn btn-ghost">Cancel</button>
+        <button type="submit" id="submitBtn" class="btn">Add</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
