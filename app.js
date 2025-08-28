@@ -6,13 +6,23 @@ const CATEGORIES = [
   { id: "other",     label: "Others" }
 ];
 
-// ------------------ daily targets (edit these to your needs) ------------------
-const DAILY_TARGETS = {
+// ------------------ targets (editable in UI) ------------------
+const TARGETS_KEY = "calorie_targets_v1";
+const DEFAULT_TARGETS = {
   kcal: 2000, protein: 50, fat: 70, satFat: 20,
   carbs: 260, sugar: 90, fiber: 30, salt: 6
 };
+function loadTargets() {
+  try {
+    const t = JSON.parse(localStorage.getItem(TARGETS_KEY));
+    if (t && typeof t === "object") return { ...DEFAULT_TARGETS, ...t };
+  } catch {}
+  return { ...DEFAULT_TARGETS };
+}
+function saveTargets(t) { localStorage.setItem(TARGETS_KEY, JSON.stringify(t)); }
+const targets = loadTargets();
 
-// ------------------ persistence ------------------
+// ------------------ persistence for foods ------------------
 const KEY = "calorie_cards_v2";
 
 function defaultSeed() {
@@ -61,6 +71,9 @@ const round1 = n => Math.round(n * 10) / 10;
 const todayISODate = () => new Date().toISOString().slice(0,10);
 const pctOf = (value, target) => target > 0 ? Math.round((value / target) * 100) : 0;
 
+const UNITS = { kcal: "kcal", protein: "g", fat: "g", satFat: "g", carbs: "g", sugar: "g", fiber: "g", salt: "g" };
+const pretty = (key, n) => key === "kcal" ? Math.round(n) : round1(n);
+
 // pure calc
 function scaled(per100, amount) {
   const f = (amount || 0) / 100;
@@ -95,31 +108,56 @@ const pctEl = {
   satFat: q("#sum-satfat-pct"), carbs: q("#sum-carbs-pct"), sugar: q("#sum-sugar-pct"),
   fiber: q("#sum-fiber-pct"), salt: q("#sum-salt-pct")
 };
+
 function renderSummary() {
   const t = totals(state.cards);
-  sumEl.kcal.textContent = Math.round(t.kcal);
-  pctEl.kcal.textContent = pctOf(t.kcal, DAILY_TARGETS.kcal) + "%";
 
-  sumEl.protein.textContent = round1(t.protein);
-  pctEl.protein.textContent = pctOf(t.protein, DAILY_TARGETS.protein) + "%";
+  function setMetric(key, value) {
+    sumEl[key].textContent = pretty(key, value);
+    const target = targets[key];
+    const pct = pctOf(value, target);
+    pctEl[key].textContent = pct + "%";
+    const msg = `${pct}% of daily target (${pretty(key, value)} ${UNITS[key]} / ${target} ${UNITS[key]})`;
+    pctEl[key].title = msg;
+    pctEl[key].setAttribute("aria-label", msg);
+  }
 
-  sumEl.fat.textContent = round1(t.fat);
-  pctEl.fat.textContent = pctOf(t.fat, DAILY_TARGETS.fat) + "%";
+  setMetric("kcal",   t.kcal);
+  setMetric("protein",t.protein);
+  setMetric("fat",    t.fat);
+  setMetric("satFat", t.satFat);
+  setMetric("carbs",  t.carbs);
+  setMetric("sugar",  t.sugar);
+  setMetric("fiber",  t.fiber);
+  setMetric("salt",   t.salt);
+}
 
-  sumEl.satFat.textContent = round1(t.satFat);
-  pctEl.satFat.textContent = pctOf(t.satFat, DAILY_TARGETS.satFat) + "%";
+// ------------------ meal subtotals (per column) ------------------
+const totalsContainers = {
+  breakfast: q("#totals-breakfast"),
+  lunch: q("#totals-lunch"),
+  dinner: q("#totals-dinner"),
+  other: q("#totals-other")
+};
+function renderMealTotals() {
+  // Show 4 compact metrics per meal: kcal, protein, carbs, fat
+  const keys = ["kcal", "protein", "carbs", "fat"];
+  const labels = { kcal: "Kcal", protein: "Protein", carbs: "Carbs", fat: "Fat" };
 
-  sumEl.carbs.textContent = round1(t.carbs);
-  pctEl.carbs.textContent = pctOf(t.carbs, DAILY_TARGETS.carbs) + "%";
-
-  sumEl.sugar.textContent = round1(t.sugar);
-  pctEl.sugar.textContent = pctOf(t.sugar, DAILY_TARGETS.sugar) + "%";
-
-  sumEl.fiber.textContent = round1(t.fiber);
-  pctEl.fiber.textContent = pctOf(t.fiber, DAILY_TARGETS.fiber) + "%";
-
-  sumEl.salt.textContent = round1(t.salt);
-  pctEl.salt.textContent = pctOf(t.salt, DAILY_TARGETS.salt) + "%";
+  Object.keys(totalsContainers).forEach(cat => {
+    const catTotals = totals(state.cards.filter(c => c.category === cat));
+    const html = keys.map(k => {
+      const val = pretty(k, catTotals[k]);
+      const pct = pctOf(catTotals[k], targets[k]);
+      const title = `${pct}% of daily target for ${labels[k]} (${val} ${UNITS[k]} / ${targets[k]} ${UNITS[k]})`;
+      return `
+        <div class="mini">
+          <span>${labels[k]}</span>
+          <span><strong>${val}</strong><span class="pct-mini" title="${title}">${pct}%</span></span>
+        </div>`;
+    }).join("");
+    totalsContainers[cat].innerHTML = html;
+  });
 }
 
 // ------------------ board containers ------------------
@@ -141,6 +179,7 @@ function renderAll() {
     arr.forEach(card => containers[cat].append(renderCard(card)));
   });
 
+  renderMealTotals();
   renderSummary();
   save(state);
   setupContainerDnD();
@@ -234,6 +273,7 @@ function renderCard(model) {
   range.addEventListener("input", e => {
     model.amount = Number(e.target.value);
     update(model.amount);
+    renderMealTotals();
     renderSummary();
     save(state);
   });
@@ -247,6 +287,7 @@ function renderCard(model) {
   header.addEventListener("dragend", () => {
     card.classList.remove("dragging");
     syncOrderFromDOM();
+    renderMealTotals();
     renderSummary();
   });
 
@@ -255,7 +296,7 @@ function renderCard(model) {
   return card;
 }
 
-// ------------------ DnD between/within boards ------------------
+// ------------------ DnD ------------------
 function setupContainerDnD() {
   Object.entries(containers).forEach(([cat, container]) => {
     const board = container.closest(".board");
@@ -316,10 +357,10 @@ function nextOrderForCategory(cat) {
   state.cards.forEach(c => { if (c.category === cat && typeof c.order === "number") max = Math.max(max, c.order); });
   return max + 1;
 }
-
 function openDialogForAdd() {
   editingId = null;
   form.reset();
+  clearInvalid(form);
   dialogTitle.textContent = "Add Food";
   submitBtn.textContent = "Add";
   if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
@@ -328,6 +369,7 @@ function openDialogForEdit(id) {
   const item = state.cards.find(c => c.id === id);
   if (!item) return;
   editingId = id;
+  clearInvalid(form);
   dialogTitle.textContent = "Modify Food";
   submitBtn.textContent = "Save";
   form.name.value = item.name;
@@ -348,29 +390,96 @@ addBtn.addEventListener("click", openDialogForAdd);
 cancelBtn.addEventListener("click", () => {
   if (typeof dlg.close === "function") dlg.close(); else dlg.removeAttribute("open");
 });
+
+// --- Validation helpers ---
+function markInvalid(input, msg) {
+  input.classList.add("invalid");
+  if (msg) input.title = msg;
+}
+function clearInvalid(scope) {
+  [...scope.querySelectorAll(".invalid")].forEach(el => el.classList.remove("invalid"));
+  [...scope.querySelectorAll("input,select")].forEach(el => { if (el.title) el.title = ""; });
+}
+function isNum(v) { return typeof v === "number" && !Number.isNaN(v) && Number.isFinite(v); }
+function parseNum(v) { const n = Number(v); return Number.isFinite(n) ? n : NaN; }
+
+function validateFoodForm(fd, formEl) {
+  const errs = [];
+  clearInvalid(formEl);
+
+  const name = String(fd.get("name") || "").trim();
+  if (!name) { errs.push("Name is required."); markInvalid(formEl.name, "Required"); }
+
+  // unit
+  const unit = String(fd.get("unit"));
+  if (!["ml","g"].includes(unit)) { errs.push("Unit must be ml or g."); markInvalid(formEl.unit, "Choose ml or g"); }
+
+  // category
+  const category = String(fd.get("category"));
+  if (!["breakfast","lunch","dinner","other"].includes(category)) {
+    errs.push("Category invalid."); markInvalid(formEl.category, "Invalid category");
+  }
+
+  // max
+  const max = parseNum(fd.get("max"));
+  if (!isNum(max) || max < 1) { errs.push("Slider max must be at least 1."); markInvalid(formEl.max, "Min 1"); }
+
+  const reqNums = ["kcal","protein","fat","satFat","carbs","sugar","fiber","salt"];
+  const vals = {};
+  reqNums.forEach(k => {
+    const el = formEl[k];
+    const n = parseNum(fd.get(k));
+    if (!isNum(n) || n < 0) {
+      errs.push(`${k} must be a number ≥ 0.`);
+      markInvalid(el, "Must be ≥ 0");
+    } else {
+      vals[k] = n;
+    }
+  });
+
+  // cross-field
+  if (isNum(vals.sugar) && isNum(vals.carbs) && vals.sugar > vals.carbs) {
+    errs.push("Sugar per 100 cannot exceed Carbs per 100.");
+    markInvalid(formEl.sugar, "Sugar ≤ Carbs");
+    markInvalid(formEl.carbs, "Carbs ≥ Sugar");
+  }
+  if (isNum(vals.satFat) && isNum(vals.fat) && vals.satFat > vals.fat) {
+    errs.push("Sat fat per 100 cannot exceed Fat per 100.");
+    markInvalid(formEl.satFat, "Sat fat ≤ Fat");
+    markInvalid(formEl.fat, "Fat ≥ Sat fat");
+  }
+
+  return { valid: errs.length === 0, errs, values: { name, category, unit, max, per100: vals } };
+}
+
+// real-time unmark on input
+form.addEventListener("input", (e) => {
+  const t = e.target;
+  if (t.classList.contains("invalid")) t.classList.remove("invalid");
+  if (t.title) t.title = "";
+});
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const fd = new FormData(form);
-  const cat = String(fd.get("category"));
+  const check = validateFoodForm(fd, form);
+
+  if (!check.valid) {
+    alert("Please fix the following:\n\n- " + check.errs.join("\n- "));
+    return;
+  }
+
+  const cat = check.values.category;
 
   if (editingId) {
     const item = state.cards.find(c => c.id === editingId);
     if (item) {
       const prevCat = item.category;
-      item.name = String(fd.get("name")).trim();
+      item.name = check.values.name;
       item.category = cat;
-      item.unit = String(fd.get("unit"));
-      item.max = Number(fd.get("max")) || 1000;
-      item.per100 = {
-        kcal: Number(fd.get("kcal")),
-        protein: Number(fd.get("protein")),
-        fat: Number(fd.get("fat")),
-        satFat: Number(fd.get("satFat")),
-        carbs: Number(fd.get("carbs")),
-        sugar: Number(fd.get("sugar")),
-        fiber: Number(fd.get("fiber")),
-        salt: Number(fd.get("salt"))
-      };
+      item.unit = check.values.unit;
+      item.max = check.values.max;
+      item.per100 = { ...check.values.per100 };
       if (cat !== prevCat) item.order = nextOrderForCategory(cat);
     }
   } else {
@@ -378,20 +487,11 @@ form.addEventListener("submit", (e) => {
       id: uid(),
       category: cat,
       order: nextOrderForCategory(cat),
-      name: String(fd.get("name")).trim(),
-      unit: String(fd.get("unit")),
-      max: Number(fd.get("max")) || 1000,
+      name: check.values.name,
+      unit: check.values.unit,
+      max: check.values.max,
       amount: 0,
-      per100: {
-        kcal: Number(fd.get("kcal")),
-        protein: Number(fd.get("protein")),
-        fat: Number(fd.get("fat")),
-        satFat: Number(fd.get("satFat")),
-        carbs: Number(fd.get("carbs")),
-        sugar: Number(fd.get("sugar")),
-        fiber: Number(fd.get("fiber")),
-        salt: Number(fd.get("salt"))
-      }
+      per100: { ...check.values.per100 }
     });
   }
 
@@ -412,7 +512,7 @@ document.querySelectorAll(".reset-cat").forEach(btn => {
   });
 });
 
-// ------------------ Save / Load to file ------------------
+// ------------------ Save / Load to file (foods) ------------------
 const saveBtn = q("#saveFileBtn");
 const loadBtn = q("#loadFileBtn");
 const loadInput = q("#loadFileInput");
@@ -473,7 +573,7 @@ loadInput.addEventListener("change", async (e) => {
 function buildExportObject() {
   const t = totals(state.cards);
   return {
-    version: 7,
+    version: 8,
     exportedAt: new Date().toISOString(),
     totals: {
       kcal: Math.round(t.kcal),
@@ -521,7 +621,6 @@ function validateImport(obj) {
     ["kcal","protein","fat","carbs","sugar"].forEach(k => {
       if (typeof c.per100[k] !== "number") throw new Error(`${path}.per100.${k} must be a number`);
     });
-    // Optional numeric fields if present
     ["satFat","fiber","salt"].forEach(k => {
       if (c.per100[k] !== undefined && typeof c.per100[k] !== "number") {
         throw new Error(`${path}.per100.${k} must be a number if present`);
@@ -530,9 +629,62 @@ function validateImport(obj) {
     if (!["breakfast","lunch","dinner","other"].includes(c.category)) {
       throw new Error(`${path}.category invalid`);
     }
-    if (!["ml","g"].includes(c.unit)) throw new Error(`${path}.unit must be 'ml' or 'g'`);
+    if (!["ml","g"].includes(c.unit)) {
+      throw new Error(`${path}.unit must be 'ml' or 'g'`);
+    }
   });
 }
+
+// ------------------ Targets form wiring (with validation) ------------------
+const targetsForm = q("#targetsForm");
+const targetsInputs = {
+  kcal:   q("#target-kcal"),
+  protein:q("#target-protein"),
+  fat:    q("#target-fat"),
+  satFat: q("#target-satFat"),
+  carbs:  q("#target-carbs"),
+  sugar:  q("#target-sugar"),
+  fiber:  q("#target-fiber"),
+  salt:   q("#target-salt")
+};
+function populateTargetsForm() {
+  Object.keys(targetsInputs).forEach(k => { targetsInputs[k].value = targets[k]; });
+}
+populateTargetsForm();
+
+// live cleanup of invalid on input
+targetsForm.addEventListener("input", (e) => {
+  const t = e.target;
+  if (t.classList.contains("invalid")) t.classList.remove("invalid");
+  if (t.title) t.title = "";
+});
+
+targetsForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const errs = [];
+  Object.keys(targetsInputs).forEach(k => {
+    const el = targetsInputs[k];
+    const n = Number(el.value);
+    if (!Number.isFinite(n) || n < 0) {
+      errs.push(`${k} must be a number ≥ 0.`);
+      markInvalid(el, "Must be ≥ 0");
+    }
+  });
+  if (errs.length) { alert("Please fix targets:\n\n- " + errs.join("\n- ")); return; }
+
+  Object.keys(targetsInputs).forEach(k => { targets[k] = Number(targetsInputs[k].value); });
+  saveTargets(targets);
+  renderMealTotals();
+  renderSummary();
+});
+
+q("#resetTargetsBtn").addEventListener("click", () => {
+  Object.assign(targets, DEFAULT_TARGETS);
+  saveTargets(targets);
+  populateTargetsForm();
+  renderMealTotals();
+  renderSummary();
+});
 
 // ------------------ boot ------------------
 renderAll();
