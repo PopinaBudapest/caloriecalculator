@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Calorie Calculator</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
   <header class="topbar">
@@ -13,35 +13,36 @@
   </header>
 
   <main class="layout">
+    <!-- Left sidebar -->
     <aside class="summary" aria-live="polite">
-      <!-- Daily Targets box -->
       <section class="targets-box">
         <h2>Daily Targets</h2>
         <form id="targetsForm" class="targets-form">
           <div class="grid2">
             <label>Calories (kcal)
-              <input id="target-kcal" type="number" min="0" step="1" required />
+              <input id="target-kcal" type="number" step="1" readonly aria-readonly="true"
+                     title="Auto-calculated from macros: P×4 + F×9 + (Carbs−Fiber)×4 + Fiber×2" />
             </label>
             <label>Protein (g)
-              <input id="target-protein" type="number" min="0" step="0.1" required />
+              <input id="target-protein" type="number" min="0" step="1" required />
             </label>
             <label>Fat (g)
-              <input id="target-fat" type="number" min="0" step="0.1" required />
+              <input id="target-fat" type="number" min="0" step="1" required />
             </label>
             <label>Sat fat (g)
-              <input id="target-satFat" type="number" min="0" step="0.1" required />
+              <input id="target-satFat" type="number" min="0" step="1" required />
             </label>
             <label>Carbs (g)
-              <input id="target-carbs" type="number" min="0" step="0.1" required />
+              <input id="target-carbs" type="number" min="0" step="1" required />
             </label>
             <label>Sugar (g)
-              <input id="target-sugar" type="number" min="0" step="0.1" required />
+              <input id="target-sugar" type="number" min="0" step="1" required />
             </label>
             <label>Fiber (g)
-              <input id="target-fiber" type="number" min="0" step="0.1" required />
+              <input id="target-fiber" type="number" min="0" step="1" required />
             </label>
             <label>Salt (g)
-              <input id="target-salt" type="number" min="0" step="0.1" required />
+              <input id="target-salt" type="number" min="0" step="1" required />
             </label>
           </div>
           <div class="summary-actions">
@@ -54,38 +55,14 @@
       <h2>Daily Summary</h2>
       <table>
         <tbody>
-          <tr>
-            <th>Calories</th>
-            <td><span id="sum-kcal">0</span> <span class="pct" id="sum-kcal-pct" tabindex="0">0%</span></td>
-          </tr>
-          <tr>
-            <th>Protein (g)</th>
-            <td><span id="sum-protein">0</span> <span class="pct" id="sum-protein-pct" tabindex="0">0%</span></td>
-          </tr>
-          <tr>
-            <th>Fat (g)</th>
-            <td><span id="sum-fat">0</span> <span class="pct" id="sum-fat-pct" tabindex="0">0%</span></td>
-          </tr>
-          <tr>
-            <th>Sat fat (g)</th>
-            <td><span id="sum-satfat">0</span> <span class="pct" id="sum-satfat-pct" tabindex="0">0%</span></td>
-          </tr>
-          <tr>
-            <th>Carbs (g)</th>
-            <td><span id="sum-carbs">0</span> <span class="pct" id="sum-carbs-pct" tabindex="0">0%</span></td>
-          </tr>
-          <tr>
-            <th>Sugar (g)</th>
-            <td><span id="sum-sugar">0</span> <span class="pct" id="sum-sugar-pct" tabindex="0">0%</span></td>
-          </tr>
-          <tr>
-            <th>Fiber (g)</th>
-            <td><span id="sum-fiber">0</span> <span class="pct" id="sum-fiber-pct" tabindex="0">0%</span></td>
-          </tr>
-          <tr>
-            <th>Salt (g)</th>
-            <td><span id="sum-salt">0</span> <span class="pct" id="sum-salt-pct" tabindex="0">0%</span></td>
-          </tr>
+          <tr><th>Calories</th><td><span id="sum-kcal">0</span><span class="pct" id="sum-kcal-pct" tabindex="0">0%</span></td></tr>
+          <tr><th>Protein (g)</th><td><span id="sum-protein">0</span><span class="pct" id="sum-protein-pct" tabindex="0">0%</span></td></tr>
+          <tr><th>Fat (g)</th><td><span id="sum-fat">0</span><span class="pct" id="sum-fat-pct" tabindex="0">0%</span></td></tr>
+          <tr><th>Sat fat (g)</th><td><span id="sum-satfat">0</span><span class="pct" id="sum-satfat-pct" tabindex="0">0%</span></td></tr>
+          <tr><th>Carbs (g)</th><td><span id="sum-carbs">0</span><span class="pct" id="sum-carbs-pct" tabindex="0">0%</span></td></tr>
+          <tr><th>Sugar (g)</th><td><span id="sum-sugar">0</span><span class="pct" id="sum-sugar-pct" tabindex="0">0%</span></td></tr>
+          <tr><th>Fiber (g)</th><td><span id="sum-fiber">0</span><span class="pct" id="sum-fiber-pct" tabindex="0">0%</span></td></tr>
+          <tr><th>Salt (g)</th><td><span id="sum-salt">0</span><span class="pct" id="sum-salt-pct" tabindex="0">0%</span></td></tr>
         </tbody>
       </table>
 
@@ -101,56 +78,57 @@
     </aside>
 
     <!-- Boards -->
-    <section class="boards">
+    <section class="boards boards-5">
       <section class="board" data-cat="breakfast">
         <header class="board__head">
-          <div class="board__bar">
-            <span>Breakfast</span>
-            <button class="icon-btn reset-cat" data-reset="breakfast">Reset</button>
-          </div>
-          <div class="board__totals" id="totals-breakfast"></div>
+          <span class="board__title">Breakfast</span>
+          <button class="icon-btn reset-cat" data-reset="breakfast">Reset</button>
         </header>
+        <div id="totals-breakfast" class="board__totals"></div>
         <div id="cards-breakfast" class="cards"></div>
       </section>
 
       <section class="board" data-cat="lunch">
         <header class="board__head">
-          <div class="board__bar">
-            <span>Lunch</span>
-            <button class="icon-btn reset-cat" data-reset="lunch">Reset</button>
-          </div>
-          <div class="board__totals" id="totals-lunch"></div>
+          <span class="board__title">Lunch</span>
+          <button class="icon-btn reset-cat" data-reset="lunch">Reset</button>
         </header>
+        <div id="totals-lunch" class="board__totals"></div>
         <div id="cards-lunch" class="cards"></div>
+      </section>
+
+      <section class="board" data-cat="snack">
+        <header class="board__head">
+          <span class="board__title">Snack</span>
+          <button class="icon-btn reset-cat" data-reset="snack">Reset</button>
+        </header>
+        <div id="totals-snack" class="board__totals"></div>
+        <div id="cards-snack" class="cards"></div>
       </section>
 
       <section class="board" data-cat="dinner">
         <header class="board__head">
-          <div class="board__bar">
-            <span>Dinner</span>
-            <button class="icon-btn reset-cat" data-reset="dinner">Reset</button>
-          </div>
-          <div class="board__totals" id="totals-dinner"></div>
+          <span class="board__title">Dinner</span>
+          <button class="icon-btn reset-cat" data-reset="dinner">Reset</button>
         </header>
+        <div id="totals-dinner" class="board__totals"></div>
         <div id="cards-dinner" class="cards"></div>
       </section>
 
-      <section class="board" data-cat="other">
+      <section class="board" data-cat="extra">
         <header class="board__head">
-          <div class="board__bar">
-            <span>Others</span>
-            <button class="icon-btn reset-cat" data-reset="other">Reset</button>
-          </div>
-          <div class="board__totals" id="totals-other"></div>
+          <span class="board__title">Extra</span>
+          <button class="icon-btn reset-cat" data-reset="extra">Reset</button>
         </header>
-        <div id="cards-other" class="cards"></div>
+        <div id="totals-extra" class="board__totals"></div>
+        <div id="cards-extra" class="cards"></div>
       </section>
     </section>
   </main>
 
   <!-- Add/Edit dialog -->
   <dialog id="foodDialog">
-    <form id="foodForm" class="dialog-form" novalidate>
+    <form id="foodForm" class="dialog-form">
       <h3 id="dialogTitle">Add Food</h3>
 
       <label>Name
@@ -162,8 +140,9 @@
           <select name="category" required>
             <option value="breakfast">Breakfast</option>
             <option value="lunch">Lunch</option>
+            <option value="snack">Snack</option>
             <option value="dinner">Dinner</option>
-            <option value="other">Others</option>
+            <option value="extra">Extra</option>
           </select>
         </label>
         <label>Unit
@@ -173,20 +152,23 @@
           </select>
         </label>
         <label>Slider max (amount)
-          <input type="number" name="max" value="1000" min="1" step="1" required />
+          <input type="number" name="max" value="1000" min="50" step="50" required />
         </label>
       </div>
 
       <p class="hint">Values per 100 of the chosen unit:</p>
       <div class="grid2">
-        <label>Kcal/100 <input type="number" name="kcal" min="0" required step="0.1" /></label>
-        <label>Protein g/100 <input type="number" name="protein" min="0" required step="0.1" /></label>
-        <label>Fat g/100 <input type="number" name="fat" min="0" required step="0.1" /></label>
-        <label>Sat fat g/100 <input type="number" name="satFat" min="0" required step="0.1" /></label>
-        <label>Carbs g/100 <input type="number" name="carbs" min="0" required step="0.1" /></label>
-        <label>Sugar g/100 <input type="number" name="sugar" min="0" required step="0.1" /></label>
-        <label>Fiber g/100 <input type="number" name="fiber" min="0" required step="0.1" /></label>
-        <label>Salt g/100 <input type="number" name="salt" min="0" required step="0.1" /></label>
+        <label>Kcal/100 (auto)
+          <input id="kcalField" name="kcal" type="number" step="0.1"
+                 readonly aria-readonly="true" />
+        </label>
+        <label>Protein g/100 <input type="number" name="protein" required step="0.1" /></label>
+        <label>Fat g/100 <input type="number" name="fat" required step="0.1" /></label>
+        <label>Sat fat g/100 <input type="number" name="satFat" required step="0.1" /></label>
+        <label>Carbs g/100 <input type="number" name="carbs" required step="0.1" /></label>
+        <label>Sugar g/100 <input type="number" name="sugar" required step="0.1" /></label>
+        <label>Fiber g/100 <input type="number" name="fiber" required step="0.1" /></label>
+        <label>Salt g/100 <input type="number" name="salt" required step="0.1" /></label>
       </div>
 
       <menu>
@@ -196,6 +178,6 @@
     </form>
   </dialog>
 
-  <script src="app.js" defer></script>
+  <script src="app.js?v=5" defer></script>
 </body>
 </html>
