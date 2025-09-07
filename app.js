@@ -97,14 +97,26 @@ function renderSummary(){
 /* ===== Meal subtotals row ===== */
 const totalsContainers={breakfast:q("#totals-breakfast"),lunch:q("#totals-lunch"),snack:q("#totals-snack"),dinner:q("#totals-dinner"),extra:q("#totals-extra")};
 function renderMealTotals(){
-  const keys=["kcal","protein","carbs","fat"], labels={kcal:"Kcal",protein:"Protein",carbs:"Carbs",fat:"Fat"};
+  const keys = ["kcal","protein","carbs","fat"];
+  const labels = {kcal:"Kcal", protein:"Protein", carbs:"Carbs", fat:"Fat"};
+
   Object.keys(totalsContainers).forEach(cat=>{
-    const t=totals(state.cards.filter(c=>c.category===cat));
-    totalsContainers[cat].innerHTML = keys.map(k=>{
-      const val=pretty(k,t[k]); const pct=pctOf(t[k],targets[k]);
-      const title=`${pct}% of daily target for ${labels[k]} (${val} ${UNITS[k]} / ${targets[k]} ${UNITS[k]})`;
-      return `<div class="mini"><span>${labels[k]}</span><span><strong>${val}</strong><span class="pct-mini" title="${title}">${pct}%</span></span></div>`;
+    const t = totals(state.cards.filter(c => c.category === cat));
+    const html = keys.map(k=>{
+      const val = k === "kcal" ? Math.round(t[k]) : Math.round(t[k]*10)/10;
+      const p   = targets[k] > 0 ? Math.round((t[k] / targets[k]) * 100) : 0;
+      const cls = p >= 100 ? "pct-mini danger" : (p >= 85 ? "pct-mini warn" : "pct-mini");
+      const title = `${p}% of daily target for ${labels[k]} (${val} ${UNITS[k]} / ${targets[k]} ${UNITS[k]})`;
+      return `
+        <div class="mini">
+          <span>${labels[k]}</span>
+          <span>
+            <strong>${val}</strong>
+            <span class="${cls}" title="${title}">${p}%</span>
+          </span>
+        </div>`;
     }).join("");
+    totalsContainers[cat].innerHTML = html;
   });
 }
 
@@ -417,7 +429,8 @@ q("#resetTargetsBtn").addEventListener("click",()=>{
   renderMealTotals(); renderSummary();
 });
 
-/* ===== Boot ===== */
+// boot
 renderAll();
 setupContainerDnD();
+
 

@@ -1,8 +1,8 @@
 :root{
   /* Layout knobs */
-  --content-max: 3000px;       /* overall app width clamp (bigger for 4K) */
-  --col-min: 340px;            /* min width per meal column */
-  --sidebar: 320px;            /* left panel width */
+  --content-max: 3000px;   /* overall app width clamp (tune for 4K) */
+  --col-min: 340px;        /* min width per meal column */
+  --sidebar: 320px;        /* left panel width */
   --gap: 16px;
 
   /* Theme */
@@ -21,9 +21,7 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
+  margin:0;background:var(--bg);color:var(--text);
   font:13.5px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
 }
 
@@ -37,24 +35,15 @@ body{
 
 /* ===== Main layout ===== */
 .layout{
-  display:grid;
-  grid-template-columns: var(--sidebar) 1fr;
-  gap:var(--gap);
-  align-items:start;
-  max-width:var(--content-max);
-  margin:18px auto;
-  padding:0 18px;
+  display:grid;grid-template-columns: var(--sidebar) 1fr;
+  gap:var(--gap);align-items:start;
+  max-width:var(--content-max);margin:18px auto;padding:0 18px;
 }
 
 /* ===== Sidebar ===== */
 .summary{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:14px;
-  box-shadow:var(--shadow);
-  position:sticky;
-  top:68px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px;box-shadow:var(--shadow);position:sticky;top:68px;
 }
 .summary h2{margin:10px 0 8px;font-size:16px}
 .summary table{width:100%;border-collapse:collapse}
@@ -76,7 +65,7 @@ body{
 }
 .targets-form input[readonly]{opacity:.8;cursor:not-allowed}
 
-/* Percent badge */
+/* Daily summary badge */
 .pct{
   display:inline-block;min-width:34px;padding:2px 6px;margin-left:6px;font-size:11px;
   border:1px solid var(--border);border-radius:8px;color:var(--muted);background:#0f1220;cursor:help
@@ -92,11 +81,7 @@ body{
 
 /* ===== Boards (right) ===== */
 .boards{
-  display:grid;
-  gap:var(--gap);
-  align-items:start;
-  /* let the grid span the whole available row */
-  justify-content:start;
+  display:grid;gap:var(--gap);align-items:start;justify-content:start;
 }
 .boards-5{
   /* fluid columns that expand, but never shrink below --col-min */
@@ -105,14 +90,9 @@ body{
 
 /* Board */
 .board{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:0 12px 12px;
-  min-height:220px;
-  display:flex;flex-direction:column;
-  width:auto;               /* key for fluid width */
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:0 12px 12px;min-height:220px;
+  display:flex;flex-direction:column;width:auto;overflow:hidden; /* contain any spill */
 }
 
 /* Column header */
@@ -123,31 +103,45 @@ body{
 }
 .board__title{font-weight:800;color:var(--muted);letter-spacing:.4px}
 
-/* Subtotals row (fixed height so alignment holds even if empty) */
+/* ===== Subtotals row (compact, resilient) ===== */
 .board__totals{
   display:grid;grid-template-columns:repeat(4,1fr);
-  gap:8px;padding:10px 0;min-height:58px
+  gap:8px;padding:10px 0;min-height:56px;align-items:center;
 }
 .board__totals .mini{
-  display:grid;grid-template-rows:auto auto;align-items:center;
+  display:grid;grid-template-rows:auto auto;align-content:center;
   background:#0f1220;border:1px solid var(--border);
-  border-radius:10px;padding:8px 10px
+  border-radius:10px;padding:8px 10px;min-width:0;overflow:hidden;
 }
-.board__totals .mini>span:first-child{color:var(--muted)}
-.board__totals .mini>span:last-child{justify-self:end;display:flex;align-items:center;gap:6px}
-.pct-mini{display:inline-block;padding:0 6px;border:1px solid var(--border);border-radius:999px;font-size:10px;color:var(--muted);cursor:help}
+.board__totals .mini > span:first-child{
+  color:var(--muted);font-size:12.5px;line-height:1.15;
+}
+/* Value + % chip stacked for zoom-safety */
+.board__totals .mini > span:last-child{
+  display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+}
+.board__totals .mini strong{
+  font-size:17px;letter-spacing:.2px;white-space:nowrap;
+}
+
+/* % chip */
+.pct-mini{
+  padding:2px 6px;border:1px solid var(--border);border-radius:999px;
+  font-size:10.5px;line-height:1.2;color:var(--muted);background:#0f1220;white-space:nowrap;
+}
+.pct-mini.warn{   border-color:#b68a2d;color:#e7c472;background:rgba(182,138,45,.12); }
+.pct-mini.danger{ border-color:#cc5f5f;color:#ffb4b4;background:rgba(204,95,95,.12); }
 
 /* Cards container */
 .cards{
   display:grid;grid-template-columns:1fr;gap:var(--gap);
-  grid-auto-rows:250px;     /* slightly taller for breathing room */
+  grid-auto-rows:280px; /* uniform card height; change to 'auto' for flexible */
   padding-top:6px;min-height:80px
 }
 
 /* Card */
 .card{
-  height:100%;
-  background:var(--card);border:1px solid var(--border);
+  height:100%;background:var(--card);border:1px solid var(--border);
   border-radius:12px;box-shadow:var(--shadow);
   display:flex;flex-direction:column;overflow:hidden;padding:12px
 }
@@ -182,6 +176,3 @@ menu{display:flex;justify-content:flex-end;gap:8px;padding:0;margin:4px 0 0 0}
   .summary{position:static}
   .boards-5{grid-template-columns:1fr}
 }
-
-.cards { grid-auto-rows: auto !important; }
-.card  { min-height: 280px; }          /* safety floor */
