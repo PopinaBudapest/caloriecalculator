@@ -139,3 +139,222 @@ input,select{
   border-radius:8px;padding:8px
 }
 input[readonly]{opacity:.85}
+
+
+/* Compact "Add Ingredient" dialog */
+.ingredient-form.compact .grid-compact{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0,1fr));
+  gap:8px;
+}
+@media (max-width:1100px){
+  .ingredient-form.compact .grid-compact{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+}
+@media (max-width:780px){
+  .ingredient-form.compact .grid-compact{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+}
+.ingredient-form.compact label{ gap:2px; }
+.ingredient-form.compact input,
+.ingredient-form.compact select{
+  padding:6px;
+  height:30px;
+  font-size:13px;
+}
+.ingredient-form.compact .card__head{ padding-bottom:6px; }
+.ingredient-form.compact footer{ margin-top:6px; }
+dialog#ingredientDialog{ max-width:920px; }
+
+/* --- Add-ingredient dialog: compact grid with small inputs --- */
+#ingredientDialog .grid-3{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:8px;
+}
+#ingredientDialog .grid-4{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0,1fr));
+  gap:8px;
+}
+@media (max-width:1100px){
+  #ingredientDialog .grid-4{ grid-template-columns:repeat(3,1fr); }
+}
+@media (max-width:780px){
+  #ingredientDialog .grid-3,
+  #ingredientDialog .grid-4{ grid-template-columns:repeat(2,1fr); }
+}
+#ingredientDialog input,
+#ingredientDialog select{
+  height:30px;
+  padding:6px;
+  font-size:13px;
+}
+
+/* --- Cooking pot: two columns + compact cards (no big macro grid) --- */
+#potList{
+  display:grid;                       /* overrides .cards{display:flex} */
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:10px;
+}
+@media (max-width:900px){
+  #potList{ grid-template-columns:1fr; }
+}
+
+/* make pot items shorter */
+#potList .food-card{ padding:8px; }
+#potList .food-card__meta{ display:none; }   /* hide long per-100 line */
+#potList .food-card__grid{ display:none; }   /* hide the 8 macro tiles */
+#potList .food-card__amount{ margin:4px 0; }
+#potList .amount-slider{ height:22px; }
+
+
+/* Add Ingredient dialog — strict two-column grid */
+#ingredientDialog .two-col{
+  display:grid;
+  grid-template-columns: 1fr 1fr;  /* two columns */
+  gap: 10px 12px;                  /* row / column gaps */
+}
+
+#ingredientDialog .two-col label{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+#ingredientDialog input,
+#ingredientDialog select{
+  height:32px;
+  padding:6px 8px;
+  font-size:13px;
+}
+
+/* Stack to one column on small screens */
+@media (max-width: 720px){
+  #ingredientDialog .two-col{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Keep the dialog hidden unless it's opened via JS */
+#ingredientDialog:not([open]) { display: none; }
+#ingredientDialog::backdrop { background: rgba(0,0,0,.45); backdrop-filter: blur(2px); }
+
+/* Two-column layout for the dialog */
+#ingredientDialog .two-col{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 12px;
+}
+#ingredientDialog .two-col label{ display:flex; flex-direction:column; gap:4px; }
+#ingredientDialog input, #ingredientDialog select{ height:32px; padding:6px 8px; font-size:13px; }
+@media (max-width:720px){ #ingredientDialog .two-col{ grid-template-columns:1fr; } }
+
+/* --- Cooking Pot: 2 columns + smaller cards --- */
+#potList{
+  display:grid;               /* override any flex */
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:10px;
+}
+@media (max-width:900px){ #potList{ grid-template-columns:1fr; } }
+#potList .food-card{ padding:8px; }
+#potList .food-card__meta{ display:none; }
+#potList .food-card__grid{ display:none; }
+#potList .food-card__amount{ margin:4px 0; }
+#potList .amount-slider{ height:22px; }
+
+/* --- Add Ingredient dialog: 2 columns --- */
+#ingredientDialog:not([open]){ display:none; }
+#ingredientDialog::backdrop{ background:rgba(0,0,0,.45); backdrop-filter:blur(2px); }
+dialog .card{ min-width:720px; max-width:90vw; }
+
+#ingredientDialog .two-col{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px 12px;
+}
+#ingredientDialog .two-col label{ display:flex; flex-direction:column; gap:4px; }
+#ingredientDialog input, #ingredientDialog select{ height:32px; padding:6px 8px; font-size:13px; }
+@media (max-width:720px){ #ingredientDialog .two-col{ grid-template-columns:1fr; } }
+
+/* Make pot cards identical to day cards */
+#potList .food-card{ padding:10px !important; }
+#potList .food-card__meta{ display:block !important; }
+#potList .food-card__grid{ display:grid !important; }
+#potList .food-card__amount{ margin:8px 0 !important; }
+#potList .amount-slider{ height:26px !important; }
+
+/* Keep the two-column layout only */
+#potList{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:10px;
+}
+@media (max-width:900px){ #potList{ grid-template-columns:1fr; } }
+
+
+.lib-card.addable{ cursor:pointer; }
+.lib-card.addable:hover{ border-color: var(--accent); }
+.lib-card.addable:active{ transform: scale(0.995); }
+
+/* clickable look for library cards and tiny hover for the new buttons */
+.lib-card.addable{ cursor:pointer; }
+.lib-card.addable:hover{ border-color: var(--accent); }
+
+/* Right-aligned header actions */
+.right-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-left:auto;            /* push to the right */
+}
+
+/* Library card details: compact macro grid */
+.lib-card .lib-macros{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0,1fr));
+  gap:6px;
+  margin-top:8px;
+}
+.lib-card .lib-macro{
+  display:flex; align-items:center; justify-content:space-between;
+  background:#101523; border:1px solid var(--border);
+  border-radius:8px; padding:6px;
+  font-size:12px;
+}
+.lib-card .lib-macro span{ color:var(--muted); }
+
+/* Day category header: library-like summary grid */
+.board__head { align-items: flex-start; }
+.board-summary { flex: 1 1 auto; margin: 6px 12px 0; }
+
+.board-summary .lib-macros{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0,1fr));
+  gap:6px;
+  margin-top:0;           /* override lib-card spacing */
+}
+.board-summary .lib-macro{
+  display:flex; align-items:center; justify-content:space-between;
+  background:#101523; border:1px solid var(--border);
+  border-radius:8px; padding:6px;
+  font-size:12px;
+}
+.board-summary .lib-macro span{ color:var(--muted); }
+@media (max-width:1100px){
+  .board-summary .lib-macros{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+}
+
+/* Library card details: compact macro grid */
+.lib-card .lib-macros{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0,1fr));
+  gap:6px;
+  margin-top:8px;
+}
+.lib-card .lib-macro{
+  display:flex; align-items:center; justify-content:space-between;
+  background:#101523; border:1px solid var(--border);
+  border-radius:8px; padding:6px;
+  font-size:12px;
+}
+.lib-card .lib-macro span{ color:var(--muted); }
+

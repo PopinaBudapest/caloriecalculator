@@ -1,178 +1,416 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Calorie Calculator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="./style.css" />
-</head>
-<body>
-  <header class="app-header">
-    <h1>Calorie Calculator</h1>
-    <nav class="tabs" role="tablist" aria-label="Views">
-      <button class="tab active" data-tab="day" role="tab" aria-selected="true" tabindex="0">Day</button>
-      <button class="tab" data-tab="foods" role="tab" aria-selected="false" tabindex="-1">Foods</button>
-    </nav>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <title>Calorie Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Calorie Calculator</h1>
+      <nav class="tabs" role="tablist" aria-label="Views">
+        <button
+          class="tab active"
+          data-tab="day"
+          role="tab"
+          aria-selected="true"
+          tabindex="0"
+        >
+          Day
+        </button>
+        <button
+          class="tab"
+          data-tab="foods"
+          role="tab"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          Foods
+        </button>
+      </nav>
+    </header>
 
-  <!-- DAY VIEW -->
-  <main id="dayView" class="layout">
-    <!-- Targets + Summary side-by-side -->
-    <section class="two-col targets-summary">
-      <!-- Daily Targets (no buttons; tiles like summary) -->
-      <section class="card targets">
-        <h2>Daily Targets</h2>
-        <form id="targetsForm" class="targets-tiles" onsubmit="return false;">
-          <div class="tile">
-            <span>Kcal</span>
-            <input id="target-kcal" name="kcal" type="number" step="1" min="0" inputmode="numeric" readonly />
+    <!-- DAY VIEW -->
+    <main id="dayView" class="layout">
+      <!-- Targets + Summary side-by-side -->
+      <section class="two-col targets-summary">
+        <!-- Daily Targets (no buttons; tiles like summary) -->
+        <section class="card targets">
+          <h2>Daily Targets</h2>
+          <form id="targetsForm" class="targets-tiles" onsubmit="return false;">
+            <div class="tile">
+              <span>Kcal</span>
+              <input
+                id="target-kcal"
+                name="kcal"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+                readonly
+              />
+            </div>
+            <div class="tile">
+              <span>Protein (g)</span>
+              <input
+                id="target-protein"
+                name="protein"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+              />
+            </div>
+            <div class="tile">
+              <span>Fat (g)</span>
+              <input
+                id="target-fat"
+                name="fat"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+              />
+            </div>
+            <div class="tile">
+              <span>Sat fat (g)</span>
+              <input
+                id="target-satFat"
+                name="satFat"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+              />
+            </div>
+            <div class="tile">
+              <span>Carbs (g)</span>
+              <input
+                id="target-carbs"
+                name="carbs"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+              />
+            </div>
+            <div class="tile">
+              <span>Sugar (g)</span>
+              <input
+                id="target-sugar"
+                name="sugar"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+              />
+            </div>
+            <div class="tile">
+              <span>Fiber (g)</span>
+              <input
+                id="target-fiber"
+                name="fiber"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+              />
+            </div>
+            <div class="tile">
+              <span>Salt (g)</span>
+              <input
+                id="target-salt"
+                name="salt"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+              />
+            </div>
+          </form>
+        </section>
+
+        <!-- Daily Summary (to the right) -->
+        <section class="card summary">
+          <h2>Daily Summary</h2>
+          <div class="summary-grid">
+            <div>
+              <span>Kcal</span><strong id="sum-kcal">0</strong
+              ><em id="sum-kcal-pct">0%</em>
+            </div>
+            <div>
+              <span>Protein</span><strong id="sum-protein">0</strong
+              ><em id="sum-protein-pct">0%</em>
+            </div>
+            <div>
+              <span>Fat</span><strong id="sum-fat">0</strong
+              ><em id="sum-fat-pct">0%</em>
+            </div>
+            <div>
+              <span>Sat Fat</span><strong id="sum-satfat">0</strong
+              ><em id="sum-satfat-pct">0%</em>
+            </div>
+            <div>
+              <span>Carbs</span><strong id="sum-carbs">0</strong
+              ><em id="sum-carbs-pct">0%</em>
+            </div>
+            <div>
+              <span>Sugar</span><strong id="sum-sugar">0</strong
+              ><em id="sum-sugar-pct">0%</em>
+            </div>
+            <div>
+              <span>Fiber</span><strong id="sum-fiber">0</strong
+              ><em id="sum-fiber-pct">0%</em>
+            </div>
+            <div>
+              <span>Salt</span><strong id="sum-salt">0</strong
+              ><em id="sum-salt-pct">0%</em>
+            </div>
           </div>
-          <div class="tile">
-            <span>Protein (g)</span>
-            <input id="target-protein" name="protein" type="number" step="1" min="0" inputmode="numeric" />
-          </div>
-          <div class="tile">
-            <span>Fat (g)</span>
-            <input id="target-fat" name="fat" type="number" step="1" min="0" inputmode="numeric" />
-          </div>
-          <div class="tile">
-            <span>Sat fat (g)</span>
-            <input id="target-satFat" name="satFat" type="number" step="1" min="0" inputmode="numeric" />
-          </div>
-          <div class="tile">
-            <span>Carbs (g)</span>
-            <input id="target-carbs" name="carbs" type="number" step="1" min="0" inputmode="numeric" />
-          </div>
-          <div class="tile">
-            <span>Sugar (g)</span>
-            <input id="target-sugar" name="sugar" type="number" step="1" min="0" inputmode="numeric" />
-          </div>
-          <div class="tile">
-            <span>Fiber (g)</span>
-            <input id="target-fiber" name="fiber" type="number" step="1" min="0" inputmode="numeric" />
-          </div>
-          <div class="tile">
-            <span>Salt (g)</span>
-            <input id="target-salt" name="salt" type="number" step="1" min="0" inputmode="numeric" />
-          </div>
-        </form>
+        </section>
       </section>
 
-      <!-- Daily Summary (to the right) -->
-      <section class="card summary">
-        <h2>Daily Summary</h2>
-        <div class="summary-grid">
-          <div><span>Kcal</span><strong id="sum-kcal">0</strong><em id="sum-kcal-pct">0%</em></div>
-          <div><span>Protein</span><strong id="sum-protein">0</strong><em id="sum-protein-pct">0%</em></div>
-          <div><span>Fat</span><strong id="sum-fat">0</strong><em id="sum-fat-pct">0%</em></div>
-          <div><span>Sat Fat</span><strong id="sum-satfat">0</strong><em id="sum-satfat-pct">0%</em></div>
-          <div><span>Carbs</span><strong id="sum-carbs">0</strong><em id="sum-carbs-pct">0%</em></div>
-          <div><span>Sugar</span><strong id="sum-sugar">0</strong><em id="sum-sugar-pct">0%</em></div>
-          <div><span>Fiber</span><strong id="sum-fiber">0</strong><em id="sum-fiber-pct">0%</em></div>
-          <div><span>Salt</span><strong id="sum-salt">0</strong><em id="sum-salt-pct">0%</em></div>
+      <!-- Reset day -->
+      <section class="row right-actions">
+        <button
+          type="button"
+          id="resetBtn"
+          class="btn btn-danger"
+          title="Clear all items from today"
+        >
+          Reset day
+        </button>
+      </section>
+
+      <!-- Boards -->
+      <section id="dayBoards" class="boards">
+        <!-- Breakfast -->
+        <div class="board">
+          <header class="board__head">
+            <div class="board__title">
+              <h3>Breakfast</h3>
+              <div id="hdrsum-breakfast" class="chips"></div>
+            </div>
+            <div class="board__actions">
+              <button class="btn btn-ghost add-from-lib" data-cat="breakfast">
+                Add
+              </button>
+              <button class="btn btn-ghost reset-cat" data-reset="breakfast">
+                Reset
+              </button>
+            </div>
+          </header>
+          <div id="cards-breakfast" class="cards"></div>
+        </div>
+
+        <!-- Lunch -->
+        <div class="board">
+          <header class="board__head">
+            <div class="board__title">
+              <h3>Lunch</h3>
+              <div id="hdrsum-lunch" class="chips"></div>
+            </div>
+            <div class="board__actions">
+              <button class="btn btn-ghost add-from-lib" data-cat="lunch">
+                Add
+              </button>
+              <button class="btn btn-ghost reset-cat" data-reset="lunch">
+                Reset
+              </button>
+            </div>
+          </header>
+          <div id="cards-lunch" class="cards"></div>
+        </div>
+
+        <!-- Snack -->
+        <div class="board">
+          <header class="board__head">
+            <div class="board__title">
+              <h3>Snack</h3>
+              <div id="hdrsum-snack" class="chips"></div>
+            </div>
+            <div class="board__actions">
+              <button class="btn btn-ghost add-from-lib" data-cat="snack">
+                Add
+              </button>
+              <button class="btn btn-ghost reset-cat" data-reset="snack">
+                Reset
+              </button>
+            </div>
+          </header>
+          <div id="cards-snack" class="cards"></div>
+        </div>
+
+        <!-- Dinner -->
+        <div class="board">
+          <header class="board__head">
+            <div class="board__title">
+              <h3>Dinner</h3>
+              <div id="hdrsum-dinner" class="chips"></div>
+            </div>
+            <div class="board__actions">
+              <button class="btn btn-ghost add-from-lib" data-cat="dinner">
+                Add
+              </button>
+              <button class="btn btn-ghost reset-cat" data-reset="dinner">
+                Reset
+              </button>
+            </div>
+          </header>
+          <div id="cards-dinner" class="cards"></div>
+        </div>
+
+        <!-- Extra -->
+        <div class="board">
+          <header class="board__head">
+            <div class="board__title">
+              <h3>Extra</h3>
+              <div id="hdrsum-extra" class="chips"></div>
+            </div>
+            <div class="board__actions">
+              <button class="btn btn-ghost add-from-lib" data-cat="extra">
+                Add
+              </button>
+              <button class="btn btn-ghost reset-cat" data-reset="extra">
+                Reset
+              </button>
+            </div>
+          </header>
+          <div id="cards-extra" class="cards"></div>
         </div>
       </section>
-    </section>
 
-    <!-- Reset day -->
-    <section class="row right-actions">
-      <button type="button" id="resetBtn" class="btn btn-danger" title="Clear all items from today">Reset day</button>
-    </section>
+      <!-- Add-to-Day Dialog -->
+      <dialog id="addToDayDialog">
+        <form class="picker">
+          <header>
+            <h4>Add to Day</h4>
+            <div class="row gap">
+              <label
+                >Type
+                <select id="addToDayType">
+                  <option value="all">All</option>
+                  <option value="ingredient">Ingredients</option>
+                  <option value="meal">Meals</option>
+                </select>
+              </label>
+              <label
+                >Category
+                <select id="addToDayCategory">
+                  <option value="all">All</option>
+                  <option value="vegetable">Vegetable</option>
+                  <option value="fruit">Fruit</option>
+                  <option value="meat">Meat</option>
+                  <option value="dairy">Dairy</option>
+                  <option value="grain">Grain</option>
+                  <option value="legume">Legume</option>
+                  <option value="beverage">Beverage</option>
+                  <option value="sauce">Sauce</option>
+                  <option value="sweet">Sweet</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+              <label
+                >Search
+                <input
+                  id="addToDaySearch"
+                  type="search"
+                  placeholder="filter by name…"
+                />
+              </label>
+            </div>
+          </header>
+          <div id="addToDayList" class="picker-list"></div>
+          <footer class="row gap">
+            <button
+              value="cancel"
+              class="btn btn-ghost"
+              type="button"
+              onclick="this.closest('dialog').close()"
+            >
+              Cancel
+            </button>
+          </footer>
+        </form>
+      </dialog>
+    </main>
 
-    <!-- Boards -->
-    <section id="dayBoards" class="boards">
-      <!-- Breakfast -->
-      <div class="board">
-        <header class="board__head">
-          <div class="board__title">
-            <h3>Breakfast</h3>
-            <div id="hdrsum-breakfast" class="chips"></div>
-          </div>
-          <div class="board__actions">
-            <button class="btn btn-ghost add-from-lib" data-cat="breakfast">Add</button>
-            <button class="btn btn-ghost reset-cat" data-reset="breakfast">Reset</button>
-          </div>
-        </header>
-        <div id="cards-breakfast" class="cards"></div>
-      </div>
+    <!-- FOODS VIEW -->
+    <main id="foodsView" class="layout hidden">
+      <header class="view-header">
+        <h2>Foods</h2>
+      </header>
 
-      <!-- Lunch -->
-      <div class="board">
-        <header class="board__head">
-          <div class="board__title">
-            <h3>Lunch</h3>
-            <div id="hdrsum-lunch" class="chips"></div>
-          </div>
-          <div class="board__actions">
-            <button class="btn btn-ghost add-from-lib" data-cat="lunch">Add</button>
-            <button class="btn btn-ghost reset-cat" data-reset="lunch">Reset</button>
-          </div>
-        </header>
-        <div id="cards-lunch" class="cards"></div>
-      </div>
+      <!-- Two-column layout: Pot (left) | Library (right) -->
+      <section class="foods-layout">
+        <!-- Cooking Pot (left) -->
+        <div id="potSection" class="card pot">
+          <div class="card__head"><h3>Cooking Pot</h3></div>
 
-      <!-- Snack -->
-      <div class="board">
-        <header class="board__head">
-          <div class="board__title">
-            <h3>Snack</h3>
-            <div id="hdrsum-snack" class="chips"></div>
+          <!-- Pot summary (detailed macros) -->
+          <div id="potSummary" class="summary-grid pot-summary-grid">
+            <div><span>Kcal</span><strong id="pot-kcal">0</strong></div>
+            <div><span>Protein</span><strong id="pot-protein">0</strong></div>
+            <div><span>Fat</span><strong id="pot-fat">0</strong></div>
+            <div><span>Sat Fat</span><strong id="pot-satfat">0</strong></div>
+            <div><span>Carbs</span><strong id="pot-carbs">0</strong></div>
+            <div><span>Sugar</span><strong id="pot-sugar">0</strong></div>
+            <div><span>Fiber</span><strong id="pot-fiber">0</strong></div>
+            <div><span>Salt</span><strong id="pot-salt">0</strong></div>
           </div>
-          <div class="board__actions">
-            <button class="btn btn-ghost add-from-lib" data-cat="snack">Add</button>
-            <button class="btn btn-ghost reset-cat" data-reset="snack">Reset</button>
-          </div>
-        </header>
-        <div id="cards-snack" class="cards"></div>
-      </div>
 
-      <!-- Dinner -->
-      <div class="board">
-        <header class="board__head">
-          <div class="board__title">
-            <h3>Dinner</h3>
-            <div id="hdrsum-dinner" class="chips"></div>
-          </div>
-          <div class="board__actions">
-            <button class="btn btn-ghost add-from-lib" data-cat="dinner">Add</button>
-            <button class="btn btn-ghost reset-cat" data-reset="dinner">Reset</button>
-          </div>
-        </header>
-        <div id="cards-dinner" class="cards"></div>
-      </div>
+          <!-- Pot cards (same UI as Day) -->
+          <div id="potList" class="cards"></div>
 
-      <!-- Extra -->
-      <div class="board">
-        <header class="board__head">
-          <div class="board__title">
-            <h3>Extra</h3>
-            <div id="hdrsum-extra" class="chips"></div>
+          <div class="pot-actions">
+            <button id="savePotAsMealBtn" class="btn btn-primary">
+              Save as Meal
+            </button>
+            <button id="clearPotBtn" class="btn btn-ghost">Clear Pot</button>
           </div>
-          <div class="board__actions">
-            <button class="btn btn-ghost add-from-lib" data-cat="extra">Add</button>
-            <button class="btn btn-ghost reset-cat" data-reset="extra">Reset</button>
-          </div>
-        </header>
-        <div id="cards-extra" class="cards"></div>
-      </div>
-    </section>
+        </div>
 
-    <!-- Add-to-Day Dialog -->
-    <dialog id="addToDayDialog">
-      <form class="picker">
-        <header>
-          <h4>Add to Day</h4>
-          <div class="row gap">
-            <label>Type
-              <select id="addToDayType">
+        <!-- Library (right) -->
+        <div id="librarySection" class="card library">
+          <div class="card__head library-head">
+            <h3>Food Library</h3>
+            <div class="right-actions">
+              <button id="libExportBtn" class="btn btn-ghost btn-small">
+                Export
+              </button>
+              <button id="libImportBtn" class="btn btn-ghost btn-small">
+                Import
+              </button>
+              <input
+                id="libImportInput"
+                type="file"
+                accept="application/json,.json"
+                hidden
+              />
+              <!-- keep your existing Add ingredient button (exactly one) -->
+              <button
+                id="libAddIngredientBtn"
+                class="btn btn-primary btn-small"
+              >
+                Add ingredient
+              </button>
+            </div>
+          </div>
+
+          <div class="library-filters">
+            <label
+              >Type
+              <select id="libFilter">
                 <option value="all">All</option>
                 <option value="ingredient">Ingredients</option>
                 <option value="meal">Meals</option>
               </select>
             </label>
-            <label>Category
-              <select id="addToDayCategory">
+            <label
+              >Category
+              <select id="libCategory">
                 <option value="all">All</option>
                 <option value="vegetable">Vegetable</option>
                 <option value="fruit">Fruit</option>
@@ -186,179 +424,209 @@
                 <option value="other">Other</option>
               </select>
             </label>
-            <label>Search
-              <input id="addToDaySearch" type="search" placeholder="filter by name…" />
+            <label
+              >Search
+              <input
+                id="librarySearch"
+                type="search"
+                placeholder="filter by name…"
+              />
             </label>
           </div>
-        </header>
-        <div id="addToDayList" class="picker-list"></div>
-        <footer class="row gap">
-          <button value="cancel" class="btn btn-ghost" type="button" onclick="this.closest('dialog').close()">Cancel</button>
-        </footer>
-      </form>
-    </dialog>
-  </main>
 
-  <!-- FOODS VIEW -->
-  <main id="foodsView" class="layout hidden">
-    <header class="view-header">
-      <h2>Foods</h2>
-    </header>
-
-    <!-- Two-column layout: Pot (left) | Library (right) -->
-    <section class="foods-layout">
-      <!-- Cooking Pot (left) -->
-      <div id="potSection" class="card pot">
-        <div class="card__head"><h3>Cooking Pot</h3></div>
-
-        <!-- Pot summary (detailed macros) -->
-        <div id="potSummary" class="summary-grid pot-summary-grid">
-          <div><span>Kcal</span><strong id="pot-kcal">0</strong></div>
-          <div><span>Protein</span><strong id="pot-protein">0</strong></div>
-          <div><span>Fat</span><strong id="pot-fat">0</strong></div>
-          <div><span>Sat Fat</span><strong id="pot-satfat">0</strong></div>
-          <div><span>Carbs</span><strong id="pot-carbs">0</strong></div>
-          <div><span>Sugar</span><strong id="pot-sugar">0</strong></div>
-          <div><span>Fiber</span><strong id="pot-fiber">0</strong></div>
-          <div><span>Salt</span><strong id="pot-salt">0</strong></div>
+          <div id="libraryGrid" class="library-grid"></div>
         </div>
+      </section>
 
-        <!-- Pot cards (same UI as Day) -->
-        <div id="potList" class="cards"></div>
+      <!-- Add Ingredient Dialog -->
+      <dialog id="ingredientDialog">
+        <form id="ingredientForm" class="card ingredient-form" novalidate>
+          <header class="card__head"><h3>Add Ingredient</h3></header>
 
-        <div class="pot-actions">
-          <button id="savePotAsMealBtn" class="btn btn-primary">Save as Meal</button>
-          <button id="clearPotBtn" class="btn btn-ghost">Clear Pot</button>
-        </div>
-      </div>
-
-      <!-- Library (right) -->
-      <div id="librarySection" class="card library">
-        <div class="card__head library-head">
-          <h3>Food Library</h3>
-          <div class="library-actions">
-            <button id="libAddIngredientBtn" class="btn">Add ingredient</button>
+          <div class="two-col">
+            <!-- Row 1 -->
+            <label
+              >Name
+              <input
+                name="name"
+                type="text"
+                placeholder="e.g., Chicken breast"
+                required
+              />
+            </label>
+            <label
+              >Category
+              <select name="category" required>
+                <option value="" selected disabled>— choose —</option>
+                <option value="vegetable">Vegetable</option>
+                <option value="fruit">Fruit</option>
+                <option value="meat">Meat</option>
+                <option value="dairy">Dairy</option>
+                <option value="grain">Grain</option>
+                <option value="legume">Legume</option>
+                <option value="beverage">Beverage</option>
+                <option value="sauce">Sauce</option>
+                <option value="sweet">Sweet</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <!-- Row 2 -->
+            <label
+              >Unit
+              <select name="unit" required>
+                <option value="" selected disabled>— choose —</option>
+                <option value="g">g</option>
+                <option value="ml">ml</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+            <label
+              >Quantity (max)
+              <input
+                name="max"
+                type="number"
+                step="1"
+                min="1"
+                inputmode="numeric"
+                placeholder="1000"
+              />
+            </label>
+            <!-- Row 3 -->
+            <label
+              >Calories /100 (auto)
+              <input
+                id="ingKcal"
+                type="number"
+                step="1"
+                inputmode="numeric"
+                placeholder="0"
+                readonly
+              />
+            </label>
+            <label
+              >Protein /100
+              <input
+                name="protein"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+                placeholder="0"
+              />
+            </label>
+            <!-- Row 4 -->
+            <label
+              >Carbs /100
+              <input
+                name="carbs"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+                placeholder="0"
+              />
+            </label>
+            <label
+              >Sugar /100
+              <input
+                name="sugar"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+                placeholder="0"
+              />
+            </label>
+            <!-- Row 5 -->
+            <label
+              >Fat /100
+              <input
+                name="fat"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+                placeholder="0"
+              />
+            </label>
+            <label
+              >Sat Fat /100
+              <input
+                name="satFat"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+                placeholder="0"
+              />
+            </label>
+            <!-- Row 6 -->
+            <label
+              >Fiber /100
+              <input
+                name="fiber"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+                placeholder="0"
+              />
+            </label>
+            <label
+              >Salt /100
+              <input
+                name="salt"
+                type="number"
+                step="1"
+                min="0"
+                inputmode="numeric"
+                placeholder="0"
+              />
+            </label>
           </div>
-        </div>
 
-        <div class="library-filters">
-          <label>Type
-            <select id="libFilter">
-              <option value="all">All</option>
-              <option value="ingredient">Ingredients</option>
-              <option value="meal">Meals</option>
-            </select>
-          </label>
-          <label>Category
-            <select id="libCategory">
-              <option value="all">All</option>
-              <option value="vegetable">Vegetable</option>
-              <option value="fruit">Fruit</option>
-              <option value="meat">Meat</option>
-              <option value="dairy">Dairy</option>
-              <option value="grain">Grain</option>
-              <option value="legume">Legume</option>
-              <option value="beverage">Beverage</option>
-              <option value="sauce">Sauce</option>
-              <option value="sweet">Sweet</option>
-              <option value="other">Other</option>
-            </select>
-          </label>
-          <label>Search
-            <input id="librarySearch" type="search" placeholder="filter by name…" />
-          </label>
-        </div>
+          <footer class="row gap" style="margin-top: 8px">
+            <button
+              id="cancelIngredientBtn"
+              type="button"
+              class="btn btn-ghost"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </footer>
+        </form>
+      </dialog>
 
-        <div id="libraryGrid" class="library-grid"></div>
-      </div>
-    </section>
+      <!-- Save Meal Dialog (standard form) -->
+      <dialog id="saveMealDialog">
+        <form id="saveMealForm" class="card">
+          <header class="card__head"><h3>Save meal</h3></header>
+          <label
+            >Name
+            <input
+              id="mealNameInput"
+              name="name"
+              type="text"
+              placeholder="My meal"
+              required
+            />
+          </label>
+          <footer class="row gap" style="margin-top: 8px">
+            <button
+              type="button"
+              class="btn btn-ghost"
+              onclick="this.closest('dialog').close()"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </footer>
+        </form>
+      </dialog>
+    </main>
 
-    <!-- Add Ingredient Dialog -->
-    <dialog id="ingredientDialog">
-      <form id="ingredientForm" class="ingredient-form card">
-        <header class="card__head">
-          <h3>Add Ingredient</h3>
-        </header>
-        <div class="grid-3">
-          <label>Name
-            <input name="name" type="text" required />
-          </label>
-          <label>Category
-            <select name="category">
-              <option value="vegetable">Vegetable</option>
-              <option value="fruit">Fruit</option>
-              <option value="meat">Meat</option>
-              <option value="dairy">Dairy</option>
-              <option value="grain">Grain</option>
-              <option value="legume">Legume</option>
-              <option value="beverage">Beverage</option>
-              <option value="sauce">Sauce</option>
-              <option value="sweet">Sweet</option>
-              <option value="other" selected>Other</option>
-            </select>
-          </label>
-          <label>Unit
-            <select name="unit">
-              <option value="g" selected>g</option>
-              <option value="ml">ml</option>
-            </select>
-          </label>
-          <label>Slider Max
-            <input name="max" type="number" step="1" min="1" inputmode="numeric" value="1000" />
-          </label>
-        </div>
-
-        <h4>Per 100 (auto kcal)</h4>
-        <div class="grid-4">
-          <label>Protein (g)
-            <input name="protein" type="number" step="1" min="0" inputmode="numeric" value="0" />
-          </label>
-          <label>Fat (g)
-            <input name="fat" type="number" step="1" min="0" inputmode="numeric" value="0" />
-          </label>
-          <label>Sat Fat (g)
-            <input name="satFat" type="number" step="1" min="0" inputmode="numeric" value="0" />
-          </label>
-          <label>Carbs (g)
-            <input name="carbs" type="number" step="1" min="0" inputmode="numeric" value="0" />
-          </label>
-          <label>Sugar (g)
-            <input name="sugar" type="number" step="1" min="0" inputmode="numeric" value="0" />
-          </label>
-          <label>Fiber (g)
-            <input name="fiber" type="number" step="1" min="0" inputmode="numeric" value="0" />
-          </label>
-          <label>Salt (g)
-            <input name="salt" type="number" step="1" min="0" inputmode="numeric" value="0" />
-          </label>
-          <label>Kcal / 100 (auto)
-            <input id="ingKcal" type="number" step="1" inputmode="numeric" value="0" readonly />
-          </label>
-        </div>
-
-        <footer class="row gap">
-          <button id="cancelIngredientBtn" type="button" class="btn btn-ghost">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save</button>
-        </footer>
-      </form>
-    </dialog>
-
-    <!-- Save Meal Dialog (standard form) -->
-    <dialog id="saveMealDialog">
-      <form id="saveMealForm" class="card">
-        <header class="card__head"><h3>Save meal</h3></header>
-        <label>Name
-          <input id="mealNameInput" name="name" type="text" placeholder="My meal" required />
-        </label>
-        <footer class="row gap" style="margin-top:8px;">
-          <button type="button" class="btn btn-ghost" onclick="this.closest('dialog').close()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save</button>
-        </footer>
-      </form>
-    </dialog>
-  </main>
-
-  <!-- ENTRY -->
-  <script type="module" src="./ui/main.js"></script>
-</body>
+    <!-- ENTRY -->
+    <script type="module" src="./ui/main.js"></script>
+  </body>
 </html>
