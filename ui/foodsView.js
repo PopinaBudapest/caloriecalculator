@@ -688,12 +688,12 @@ export function initFoodsView(store, Core) {
       </label>
       <div class="food-card__grid">
         ${macro("Kcal", Math.round(m.kcal))}
-        ${macro("Protein", r1(m.protein))}
+        ${macro("P", r1(m.protein))}
         ${macro("Fat", r1(m.fat))}
-        ${macro("Sat fat", r1(m.satFat))}
-        ${macro("Carbs", r1(m.carbs))}
-        ${macro("Sugar", r1(m.sugar))}
-        ${macro("Fiber", r1(m.fiber))}
+        ${macro("Sat", r1(m.satFat))}
+        ${macro("Carb", r1(m.carbs))}
+        ${macro("S", r1(m.sugar))}
+        ${macro("Fi", r1(m.fiber))}
         ${macro("Salt", r1(m.salt))}
       </div>
     </article>
