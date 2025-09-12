@@ -1,35 +1,33 @@
-import { DEFAULT_TARGETS } from "./models.js";
+// core/storage.js
+export const LS_KEY = 'cc_v2_state';
 
-const KEYS = {
-  targets: "calorie_targets_v3",
-  day: "calorie_day_v3",
-  library: "food_library_v2",
-};
-
-export function loadTargets() {
-  try { return { ...DEFAULT_TARGETS, ...(JSON.parse(localStorage.getItem(KEYS.targets)) || {}) }; }
-  catch { return { ...DEFAULT_TARGETS }; }
-}
-export function saveTargets(t) { localStorage.setItem(KEYS.targets, JSON.stringify(t)); }
-
-export function loadLibrary(seedFn) {
+export function loadState() {
   try {
-    const s = JSON.parse(localStorage.getItem(KEYS.library));
-    if (s && Array.isArray(s.items)) return s;
-  } catch {}
-  const seeded = seedFn();
-  localStorage.setItem(KEYS.library, JSON.stringify(seeded));
-  return seeded;
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    return data && typeof data === 'object' ? data : null;
+  } catch (_) {
+    return null;
+  }
 }
-export function saveLibrary(lib) { localStorage.setItem(KEYS.library, JSON.stringify(lib)); }
 
-export function loadDay(seedFn) {
+export function saveState(partial) {
   try {
-    const s = JSON.parse(localStorage.getItem(KEYS.day));
-    if (s && Array.isArray(s.cards)) return s;
-  } catch {}
-  const seeded = seedFn();
-  localStorage.setItem(KEYS.day, JSON.stringify(seeded));
-  return seeded;
+    const cur = loadState() || { version: 1 };
+    const next = { ...cur, ...partial };
+    localStorage.setItem(LS_KEY, JSON.stringify(next));
+  } catch (_) {
+    // ignore (quota/private mode)
+  }
 }
-export function saveDay(day) { localStorage.setItem(KEYS.day, JSON.stringify(day)); }
+
+// tiny write coalescing so we don't spam storage
+let _t;
+export function scheduleSave(buildPartial) {
+  clearTimeout(_t);
+  _t = setTimeout(() => {
+    const piece = buildPartial();
+    if (piece) saveState(piece);
+  }, 150);
+}

@@ -134,7 +134,11 @@
 
         <!-- Daily Summary (to the right) -->
         <section class="card summary">
-          <h2>Daily Summary</h2>
+          <div class="card__head card__head--summary">
+            <h3>Daily Summary</h3>
+            <button id="resetBtn" class="btn btn-danger">Reset day</button>
+          </div>
+
           <div class="summary-grid">
             <div>
               <span>Kcal</span><strong id="sum-kcal">0</strong
@@ -170,18 +174,6 @@
             </div>
           </div>
         </section>
-      </section>
-
-      <!-- Reset day -->
-      <section class="row right-actions">
-        <button
-          type="button"
-          id="resetBtn"
-          class="btn btn-danger"
-          title="Clear all items from today"
-        >
-          Reset day
-        </button>
       </section>
 
       <!-- Boards -->
