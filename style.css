@@ -787,3 +787,87 @@ dialog.picker input[type="range"],
 dialog > .picker input[type="range"] {
   all: unset;
 }
+
+/* Day cards header: title left, actions right */
+.food-card__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.food-card__head h4{ margin:0; flex:1 1 auto; }
+.food-card__head .row{ display:flex; gap:8px; align-items:center; margin-left:auto; }
+
+/* Drag handle affordance */
+.food-card__head[draggable="true"]{ cursor:grab; }
+.food-card__head[draggable="true"]:active{ cursor:grabbing; }
+
+/* Optional: responsive wrap */
+@media (max-width:520px){
+  .food-card__head{ flex-wrap:wrap; }
+}
+
+.btn-success {
+  background: #16a34a;         /* green */
+  color: #fff;
+  border: none;
+}
+.btn-success:hover { filter: brightness(0.95); }
+
+/* Header actions: right-aligned group */
+.card__head--summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card__head--summary .summary-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+}
+
+/* Make both buttons same size */
+.card__head--summary .summary-actions .btn {
+  min-width: 120px;       /* equal width */
+  height: 44px;           /* equal height */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;        /* consistent padding */
+  border-radius: 14px;    /* match your pill style */
+}
+
+/* Keep your existing button colors */
+.btn-success { background:#16a34a; color:#fff; border:none; }
+.btn-danger  { background:#ef4444; color:#fff; border:none; }
+.btn-success:hover, .btn-danger:hover { filter: brightness(0.95); }
+.btn:focus-visible { outline: 2px solid var(--accent, #60a5fa); outline-offset: 2px; }
+
+/* Header actions: right-aligned group */
+.card__head--summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card__head--summary .summary-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+}
+
+/* Make both buttons same size */
+.card__head--summary .summary-actions .btn {
+  min-width: 120px;       /* equal width */
+  height: 44px;           /* equal height */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;        /* consistent padding */
+  border-radius: 14px;    /* match your pill style */
+}
+
+/* Keep your existing button colors */
+.btn-success { background:#16a34a; color:#fff; border:none; }
+.btn-danger  { background:#ef4444; color:#fff; border:none; }
+.btn-success:hover, .btn-danger:hover { filter: brightness(0.95); }
+.btn:focus-visible { outline: 2px solid var(--accent, #60a5fa); outline-offset: 2px; }

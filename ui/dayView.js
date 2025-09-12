@@ -1,4 +1,7 @@
 // /ui/dayView.js
+
+import { initSaveDayExcel } from "./saveDayExcel.js";
+
 export function initDayView(store, Core) {
   const cats = ["breakfast", "lunch", "snack", "dinner", "extra"];
 
@@ -762,5 +765,6 @@ export function initDayView(store, Core) {
   }
 
   render();
+  initSaveDayExcel();
   store.subscribe(render);
 }

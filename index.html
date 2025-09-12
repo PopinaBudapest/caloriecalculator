@@ -136,6 +136,13 @@
         <section class="card summary">
           <div class="card__head card__head--summary">
             <h3>Daily Summary</h3>
+            <button id="saveDayBtn" class="btn btn-success">Save day</button>
+            <input
+              id="saveDayExcelInput"
+              type="file"
+              accept=".xlsx,.xls"
+              hidden
+            />
             <button id="resetBtn" class="btn btn-danger">Reset day</button>
           </div>
 
@@ -619,6 +626,8 @@
     </main>
 
     <!-- ENTRY -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script type="module" src="./ui/main.js"></script>
+    
   </body>
 </html>
