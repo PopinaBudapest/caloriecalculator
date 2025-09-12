@@ -872,3 +872,105 @@ dialog > .picker input[type="range"] {
 .btn-success:hover, .btn-danger:hover { filter: brightness(0.95); }
 .btn:focus-visible { outline: 2px solid var(--accent, #60a5fa); outline-offset: 2px; }
 
+/* ===== Foods view layout ===== */
+
+/* Make the Cooking Pot column narrower and Library wider */
+#foodsView .foods-layout{
+  display: grid;
+  grid-template-columns: minmax(280px, 28%) 1fr; /* POT ~28% (min 280px) | LIBRARY fills */
+  gap: 16px;
+  align-items: start;
+}
+
+/* Library grid: 4 columns (responsive fallbacks below) */
+#librarySection .library-grid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+/* Tidy cards to stretch nicely */
+#potSection, #librarySection { height: 100%; }
+
+/* ---- Responsive breakpoints ---- */
+@media (max-width: 1400px){
+  #librarySection .library-grid{ grid-template-columns: repeat(3, minmax(160px, 1fr)); }
+}
+@media (max-width: 1000px){
+  #foodsView .foods-layout{ grid-template-columns: 1fr; }  /* stack on narrow screens */
+  #librarySection .library-grid{ grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+}
+@media (max-width: 640px){
+  #librarySection .library-grid{ grid-template-columns: 1fr; }
+}
+
+/* ===== Foods view layout (Library on the left, Pot on the right) ===== */
+#foodsView .foods-layout{
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 28%); /* Library wide | Pot narrow */
+  gap: 16px;
+  align-items: start;
+}
+
+/* Place items explicitly */
+#librarySection{ grid-column: 1; }
+#potSection{ grid-column: 2; }
+
+/* Library grid: 4 columns (keep from before) */
+#librarySection .library-grid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+/* Responsive fallbacks */
+@media (max-width: 1400px){
+  #librarySection .library-grid{ grid-template-columns: repeat(3, minmax(160px, 1fr)); }
+}
+@media (max-width: 1000px){
+  #foodsView .foods-layout{ grid-template-columns: 1fr; } /* stack on narrow screens */
+  #librarySection, #potSection{ grid-column: 1; }
+  #librarySection .library-grid{ grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+}
+@media (max-width: 640px){
+  #librarySection .library-grid{ grid-template-columns: 1fr; }
+}
+
+/* ===== Foods view layout: Library LEFT, Pot RIGHT on the same row ===== */
+#foodsView .foods-layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(300px, 28%); /* Library wide | Pot narrow */
+  gap: 16px;
+  align-items: start;
+}
+
+/* Force positions AND the same row */
+#librarySection {
+  grid-column: 1;
+  grid-row: 1;
+  margin-top: 0 !important;   /* kill any stray top margin */
+}
+#potSection {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+/* Library grid stays at 4 columns */
+#librarySection .library-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+/* Responsive fallbacks */
+@media (max-width: 1400px){
+  #librarySection .library-grid { grid-template-columns: repeat(3, minmax(160px, 1fr)); }
+}
+@media (max-width: 1000px){
+  #foodsView .foods-layout { grid-template-columns: 1fr; }
+  #librarySection, #potSection { grid-column: 1; grid-row: auto; } /* stack */
+  #librarySection .library-grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+}
+@media (max-width: 640px){
+  #librarySection .library-grid { grid-template-columns: 1fr; }
+}
