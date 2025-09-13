@@ -251,11 +251,20 @@ html:has(dialog[open]) {
 }
 .card.summary #resetBtn {
   position: absolute;
-  right: 16px;
+  right: 50px;
   top: calc(var(--sum-pad-top) + var(--sum-row-h) / 2);
   transform: translateY(-50%);
   z-index: 2;
 }
+
+.card.summary #saveDayBtn {
+  position: relative;
+  right: 250x;
+  top: calc(var(--sum-pad-top) + var(--sum-row-h) / 23);
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
 #resetBtn {
   background: var(--danger);
   border-color: transparent;
@@ -264,6 +273,9 @@ html:has(dialog[open]) {
 #resetBtn:hover {
   filter: brightness(0.95);
 }
+
+
+
 
 /* ==========================================================================
    DAY COLUMNS (BOARDS)
@@ -993,3 +1005,19 @@ dialog > .picker input[type="range"] {
 
 /* Firefox quirks */
 #ingredientDialog .ingredient-form .btn::-moz-focus-inner { border: 0; }
+
+/* Lighter grey just for Food Library cards */
+#librarySection .lib-card {
+  background: #1f2733;          /* lighter than #121725 */
+  border-color: #2e3a4c;
+}
+
+#librarySection .lib-card .lib-macro {
+  background: #232e3d;          /* match your summary/targets tiles */
+  border-color: #2e3a4c;
+}
+
+/* Optional: slightly brighter hover */
+#librarySection .lib-card:hover {
+  border-color: #3a4b66;
+}
