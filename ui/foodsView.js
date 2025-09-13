@@ -1,4 +1,4 @@
-// ui/foodsView.js
+// /ui/foodsView.js
 // Foods tab: Library + Cooking Pot + dialogs
 // - Click anywhere on a library card to add to pot
 // - Edit/Delete actions on each library card
@@ -34,6 +34,7 @@ export function initFoodsView(store, Core) {
     salt: document.getElementById("pot-salt"),
   };
 
+  const saveIngredientBtn = document.getElementById("savePotAsIngredientBtn"); // NEW
   const saveMealBtn = document.getElementById("savePotAsMealBtn");
   const clearPotBtn = document.getElementById("clearPotBtn");
 
@@ -42,11 +43,151 @@ export function initFoodsView(store, Core) {
   const addForm = document.getElementById("ingredientForm");
   const addCancel = document.getElementById("cancelIngredientBtn");
   const ingKcal = document.getElementById("ingKcal");
+  if (ingKcal) {
+    ingKcal.removeAttribute("readonly");
+  }
+
+  // Tracks whether user manually edited kcal (so we won't auto-overwrite)
+  let kcalManual = false;
+
+  // If the user types in kcal, treat it as manual override
+  ingKcal?.addEventListener("input", () => {
+    // Any keystroke toggles to manual
+    kcalManual = true;
+  });
+
+  // If user clears kcal, go back to auto mode
+  ingKcal?.addEventListener("change", () => {
+    if (!ingKcal.value) kcalManual = false;
+  });
 
   // Save Meal dialog
   const saveMealDlg = document.getElementById("saveMealDialog");
   const saveMealForm = document.getElementById("saveMealForm");
   const mealNameInput = document.getElementById("mealNameInput");
+
+  // --- Helpers for "Save Ingredient from pot" ---
+  const r1 = (n) => Math.round((+n || 0) * 10) / 10;
+
+  function gramsOfItem(itemFromLib, potEntryAmount) {
+    if (!itemFromLib) return 0;
+    return itemFromLib.type === "meal"
+      ? (itemFromLib.gramsPerPiece || 0) * (potEntryAmount || 0)
+      : potEntryAmount || 0;
+  }
+
+  function scaledMacros(per100, grams) {
+    const p = {
+      kcal:
+        per100?.kcal ??
+        Math.round(
+          (per100?.protein || 0) * 4 +
+            (per100?.fat || 0) * 9 +
+            (per100?.carbs || 0) * 4
+        ),
+      protein: per100?.protein || 0,
+      fat: per100?.fat || 0,
+      satFat: per100?.satFat || 0,
+      carbs: per100?.carbs || 0,
+      sugar: per100?.sugar || 0,
+      fiber: per100?.fiber || 0,
+      salt: per100?.salt || 0,
+    };
+    const f = (grams || 0) / 100;
+    return {
+      kcal: p.kcal * f,
+      protein: p.protein * f,
+      fat: p.fat * f,
+      satFat: p.satFat * f,
+      carbs: p.carbs * f,
+      sugar: p.sugar * f,
+      fiber: p.fiber * f,
+      salt: p.salt * f,
+    };
+  }
+
+  // Compute totals and per-100g from the pot (joins with library)
+  function computePotPer100(store) {
+    const s = store.get() || {};
+    const pot = s.pot || [];
+    const lib = s.library?.items || [];
+
+    let totalGrams = 0;
+    const sum = {
+      kcal: 0,
+      protein: 0,
+      fat: 0,
+      satFat: 0,
+      carbs: 0,
+      sugar: 0,
+      fiber: 0,
+      salt: 0,
+    };
+
+    for (const p of pot) {
+      const item = lib.find((x) => x.id === p.id);
+      if (!item) continue;
+
+      const grams = gramsOfItem(item, p.amount || 0);
+      totalGrams += grams;
+
+      const m = scaledMacros(item.per100 || {}, grams);
+      sum.kcal += m.kcal;
+      sum.protein += m.protein;
+      sum.fat += m.fat;
+      sum.satFat += m.satFat;
+      sum.carbs += m.carbs;
+      sum.sugar += m.sugar;
+      sum.fiber += m.fiber;
+      sum.salt += m.salt;
+    }
+
+    if (totalGrams <= 0) return { totalGrams: 0, per100: null };
+
+    const scale = totalGrams / 100;
+    const per100 = {
+      kcal: Math.round(sum.kcal / scale),
+      protein: r1(sum.protein / scale),
+      fat: r1(sum.fat / scale),
+      satFat: r1(sum.satFat / scale),
+      carbs: r1(sum.carbs / scale),
+      sugar: r1(sum.sugar / scale),
+      fiber: r1(sum.fiber / scale),
+      salt: r1(sum.salt / scale),
+    };
+    return { totalGrams, per100 };
+  }
+
+  function openIngredientDialogPrefilled(per100) {
+    const dlg = document.getElementById("ingredientDialog");
+    const form = document.getElementById("ingredientForm");
+    if (!dlg || !form || !per100) return;
+
+    // Prefill
+    form.querySelector('input[name="name"]').value = "Custom ingredient";
+    form.querySelector('select[name="category"]').value = "other";
+    form.querySelector('select[name="unit"]').value = "g";
+    form.querySelector('input[name="max"]').value = 1000;
+
+    // Macros per 100
+    form.querySelector('input[name="protein"]').value = per100.protein;
+    form.querySelector('input[name="carbs"]').value = per100.carbs;
+    form.querySelector('input[name="sugar"]').value = per100.sugar;
+    form.querySelector('input[name="fat"]').value = per100.fat;
+    form.querySelector('input[name="satFat"]').value = per100.satFat;
+    form.querySelector('input[name="fiber"]').value = per100.fiber;
+    form.querySelector('input[name="salt"]').value = per100.salt;
+
+    const kcalField = document.getElementById("ingKcal");
+    if (kcalField) kcalField.value = per100.kcal;
+    kcalManual = false;
+
+    try {
+      dlg.showModal();
+    } catch {
+      dlg.open = true;
+    }
+  }
 
   // ---------- Utils ----------
   const MACROS = [
@@ -60,7 +201,6 @@ export function initFoodsView(store, Core) {
   ];
   const uuid = () => crypto?.randomUUID?.() || String(Date.now());
 
-  const r1 = (n) => Math.round((n || 0) * 10) / 10;
   const esc = (s) =>
     String(s).replace(
       /[&<>"']/g,
@@ -150,6 +290,9 @@ export function initFoodsView(store, Core) {
   let editingMealId = null;
 
   function openCreateIngredient() {
+    kcalManual = false;
+    if (ingKcal) ingKcal.value = "";
+
     editingId = null;
     addForm?.reset();
     addForm
@@ -167,6 +310,8 @@ export function initFoodsView(store, Core) {
   }
 
   function openEditIngredient(item) {
+    kcalManual = false;
+
     editingId = item.id;
     addForm?.reset();
     addForm.elements.name.value = item.name || "";
@@ -182,7 +327,8 @@ export function initFoodsView(store, Core) {
     addForm.elements.sugar.value = p.sugar || 0;
     addForm.elements.fiber.value = p.fiber || 0;
     addForm.elements.salt.value = p.salt || 0;
-    if (ingKcal) ingKcal.value = p.kcal || 0;
+
+    if (ingKcal) ingKcal.value = p.kcal || 0; // <-- add this line
 
     try {
       addDlg.showModal();
@@ -282,8 +428,6 @@ export function initFoodsView(store, Core) {
       } else {
         // MEAL: load back into pot for editing
         startEditMeal(item);
-        // optionally scroll to pot:
-        // document.getElementById("potList")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
       return;
     }
@@ -333,21 +477,30 @@ export function initFoodsView(store, Core) {
 
   // live kcal compute in dialog
   addForm?.addEventListener("input", (e) => {
-    if (!MACROS.includes(e.target.name)) return;
+    // Only react to macro fields changing
+    if (
+      !["protein", "fat", "carbs", "satFat", "sugar", "fiber", "salt"].includes(
+        e.target.name
+      )
+    )
+      return;
+
     const fd = new FormData(addForm);
     const p = {
       protein: +fd.get("protein") || 0,
       fat: +fd.get("fat") || 0,
       carbs: +fd.get("carbs") || 0,
     };
-    const kcal = Math.round(kcalFromMacros(p));
-    if (ingKcal) ingKcal.value = String(kcal);
+    const kcal = Math.round(p.protein * 4 + p.fat * 9 + p.carbs * 4);
+
+    if (ingKcal) ingKcal.value = String(kcal); // always overwrite on macro change
   });
 
   // submit (create or update)
   addForm?.addEventListener("submit", (e) => {
     e.preventDefault();
     const fd = new FormData(addForm);
+
     const name = String(fd.get("name") || "").trim();
     if (!name) {
       addForm.elements.name?.reportValidity?.();
@@ -364,20 +517,24 @@ export function initFoodsView(store, Core) {
       return;
     }
 
+    const kcalInput = fd.get("kcal");
+    const per100Raw = {
+      protein: +fd.get("protein") || 0,
+      fat: +fd.get("fat") || 0,
+      satFat: +fd.get("satFat") || 0,
+      carbs: +fd.get("carbs") || 0,
+      sugar: +fd.get("sugar") || 0,
+      fiber: +fd.get("fiber") || 0,
+      salt: +fd.get("salt") || 0,
+      kcal: Number.isFinite(+kcalInput) ? Math.round(+kcalInput) : undefined, // keep manual value if provided
+    };
+
     const base = {
       name,
       category: String(fd.get("category") || "other"),
       unit: String(fd.get("unit") || "g"),
       max: Math.max(1, parseInt(fd.get("max") || "1000", 10) || 1000),
-      per100: withKcal({
-        protein: +fd.get("protein") || 0,
-        fat: +fd.get("fat") || 0,
-        satFat: +fd.get("satFat") || 0,
-        carbs: +fd.get("carbs") || 0,
-        sugar: +fd.get("sugar") || 0,
-        fiber: +fd.get("fiber") || 0,
-        salt: +fd.get("salt") || 0,
-      }),
+      per100: withKcal(per100Raw), // fills kcal if undefined
     };
 
     if (!editingId) {
@@ -400,6 +557,7 @@ export function initFoodsView(store, Core) {
         },
       }));
     }
+
     addDlg?.close?.();
   });
 
@@ -565,19 +723,13 @@ export function initFoodsView(store, Core) {
             <small>${kcalLine}</small>
 
             <div class="lib-macros">
-              ${micro(
-                "Kcal",
-                Math.round(isMeal ? piece?.kcal || 0 : p100.kcal)
-              )}
+              ${micro("Kc", Math.round(isMeal ? piece?.kcal || 0 : p100.kcal))}
               ${micro(
                 "P",
                 r1(isMeal ? piece?.protein || 0 : p100.protein || 0)
               )}
               ${micro("F", r1(isMeal ? piece?.fat || 0 : p100.fat || 0))}
-              ${micro(
-                "Sat",
-                r1(isMeal ? piece?.satFat || 0 : p100.satFat || 0)
-              )}
+              ${micro("Sf", r1(isMeal ? piece?.satFat || 0 : p100.satFat || 0))}
               ${micro("C", r1(isMeal ? piece?.carbs || 0 : p100.carbs || 0))}
               ${micro("S", r1(isMeal ? piece?.sugar || 0 : p100.sugar || 0))}
               ${micro("Fi", r1(isMeal ? piece?.fiber || 0 : p100.fiber || 0))}
@@ -687,14 +839,14 @@ export function initFoodsView(store, Core) {
         <input class="amount-slider" type="range" min="0" max="${max}" step="${step}" value="${safeAmount}">
       </label>
       <div class="food-card__grid">
-        ${macro("Kcal", Math.round(m.kcal))}
+        ${macro("Kc", Math.round(m.kcal))}
         ${macro("P", r1(m.protein))}
-        ${macro("Fat", r1(m.fat))}
-        ${macro("Sat", r1(m.satFat))}
-        ${macro("Carb", r1(m.carbs))}
+        ${macro("F", r1(m.fat))}
+        ${macro("Sf", r1(m.satFat))}
+        ${macro("C", r1(m.carbs))}
         ${macro("S", r1(m.sugar))}
         ${macro("Fi", r1(m.fiber))}
-        ${macro("Salt", r1(m.salt))}
+        ${macro("Sa", r1(m.salt))}
       </div>
     </article>
   `;
@@ -830,6 +982,16 @@ export function initFoodsView(store, Core) {
     write(potTotals.salt, r1(totals.salt));
   }
 
+  // ---------- Save Ingredient (NEW) ----------
+  saveIngredientBtn?.addEventListener("click", () => {
+    const { totalGrams, per100 } = computePotPer100(store);
+    if (!per100 || totalGrams <= 0) {
+      alert("Cooking Pot is empty (or 0 g). Add some items first.");
+      return;
+    }
+    openIngredientDialogPrefilled(per100);
+  });
+
   // ---------- Save meal + clear pot ----------
   const mealExists = (state, name, excludeId = null) =>
     nameExists(state, name, excludeId);
@@ -855,8 +1017,7 @@ export function initFoodsView(store, Core) {
     for (const p of pot) {
       const it = lib.find((x) => x.id === p.id);
       if (!it) continue;
-      const amount = p.amount || 0; // grams/ml or pieces? here pot only has ingredients (before saving),
-      // but even if meals were in pot, scaledForItem handles them.
+      const amount = p.amount || 0;
       const m = scaledForItem(it, amount);
       totals.kcal += m.kcal;
       totals.protein += m.protein;
@@ -867,7 +1028,6 @@ export function initFoodsView(store, Core) {
       totals.fiber += m.fiber;
       totals.salt += m.salt;
 
-      // compute weight contribution in grams/ml
       const weight =
         it.type === "meal"
           ? (it.gramsPerPiece || 0) * amount // amount = pieces
@@ -877,7 +1037,7 @@ export function initFoodsView(store, Core) {
       items.push({
         id: it.id,
         name: it.name,
-        amount, // keep original amounts for meal breakdown
+        amount,
         unit: it.type === "meal" ? "piece" : it.unit || "g",
         per100: withKcal(it.per100),
         type: it.type,
@@ -886,7 +1046,6 @@ export function initFoodsView(store, Core) {
       });
     }
 
-    // Average per-100g for the MEAL (kept for compatibility/scaling)
     const per100 = {
       kcal: 0,
       protein: 0,
@@ -908,10 +1067,10 @@ export function initFoodsView(store, Core) {
       type: "meal",
       name: name.trim(),
       category: "other",
-      unit: "piece", // <<< fixed
-      gramsPerPiece: Math.round(totalAmt), // <<< one piece weighs the total pot
-      max: 10, // slider up to 10 pieces by default
-      per100, // average per 100g; we use gramsPerPiece to compute per piece
+      unit: "piece",
+      gramsPerPiece: Math.round(totalAmt),
+      max: 10,
+      per100,
       items,
     };
   }
@@ -991,8 +1150,6 @@ export function initFoodsView(store, Core) {
   });
 
   // ---------- Export / Import ----------
-
-  // Export current library as pretty JSON
   exportBtn?.addEventListener("click", () => {
     const items = store.get().library?.items || [];
     const payload = {
@@ -1014,7 +1171,6 @@ export function initFoodsView(store, Core) {
     URL.revokeObjectURL(url);
   });
 
-  // Open file picker
   importBtn?.addEventListener("click", () => importInput?.click());
 
   // Import: silent merge, skip duplicate names (case-insensitive)

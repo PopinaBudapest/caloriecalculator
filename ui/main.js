@@ -188,6 +188,8 @@ initTabs();
     });
   });
 
+  
+
   // also save on explicit target edits and tab clicks
   document.getElementById("targetsForm")?.addEventListener("input", () => {
     scheduleSave(() => ({ targets: readTargets() }));

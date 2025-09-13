@@ -666,17 +666,7 @@ dialog .card {
   position: relative;
   z-index: 0;
 }
-#ingredientDialog footer::before {
-  content: "";
-  position: absolute;
-  inset: -8px -10px;
-  background: rgba(90, 162, 255, 0.1);
-  border: 1px solid rgba(90, 162, 255, 0.35);
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(90, 162, 255, 0.18);
-  pointer-events: none;
-  z-index: -1;
-}
+
 #ingredientDialog footer .btn-primary {
   position: relative;
   z-index: 1;
@@ -974,3 +964,32 @@ dialog > .picker input[type="range"] {
 @media (max-width: 640px){
   #librarySection .library-grid { grid-template-columns: 1fr; }
 }
+
+/* Remove the container halo in the Add Ingredient dialog */
+#ingredientDialog .ingredient-form:focus-within {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* If you use :has() for focus styling elsewhere, neutralize here too */
+#ingredientDialog .ingredient-form:has(:focus-visible) {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Also remove any button focus shadow just inside this dialog */
+#ingredientDialog .ingredient-form .btn,
+#ingredientDialog .ingredient-form button {
+  outline: none;
+  box-shadow: none;
+}
+#ingredientDialog .ingredient-form .btn:focus,
+#ingredientDialog .ingredient-form .btn:focus-visible,
+#ingredientDialog .ingredient-form button:focus,
+#ingredientDialog .ingredient-form button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Firefox quirks */
+#ingredientDialog .ingredient-form .btn::-moz-focus-inner { border: 0; }

@@ -338,7 +338,6 @@
 
     <!-- FOODS VIEW -->
     <main id="foodsView" class="layout hidden">
-
       <!-- Two-column layout: Pot (left) | Library (right) -->
       <section class="foods-layout">
         <!-- Cooking Pot (left) -->
@@ -363,6 +362,9 @@
           <div class="pot-actions">
             <button id="savePotAsMealBtn" class="btn btn-primary">
               Save as Meal
+            </button>
+            <button id="savePotAsIngredientBtn" class="btn btn-success">
+              Save Ingredient
             </button>
             <button id="clearPotBtn" class="btn btn-ghost">Clear Pot</button>
           </div>
@@ -488,17 +490,12 @@
               />
             </label>
             <!-- Row 3 -->
-            <label
-              >Calories /100 (auto)
-              <input
-                id="ingKcal"
-                type="number"
-                step="1"
-                inputmode="numeric"
-                placeholder="0"
-                readonly
-              />
+            <label>
+              Calories /100 (kcal)
+              <input id="ingKcal" name="kcal"
+              type="number" step="1" inputmode="numeric" placeholder="0" />
             </label>
+
             <label
               >Protein /100
               <input
@@ -625,6 +622,5 @@
     <!-- ENTRY -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script type="module" src="./ui/main.js"></script>
-    
   </body>
 </html>
