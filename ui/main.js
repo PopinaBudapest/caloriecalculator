@@ -188,7 +188,21 @@ initTabs();
     });
   });
 
-  
+  const addResetBtn = document.getElementById("addToDayResetBtn");
+  const addTypeSel = document.getElementById("addToDayType");
+  const addCatSel = document.getElementById("addToDayCategory");
+  const addSearchIn = document.getElementById("addToDaySearch");
+
+  addResetBtn?.addEventListener("click", () => {
+    if (addTypeSel) addTypeSel.value = "all";
+    if (addCatSel) addCatSel.value = "all";
+    if (addSearchIn) addSearchIn.value = "";
+
+    // Trigger existing listeners so the list refreshes
+    addTypeSel?.dispatchEvent(new Event("change", { bubbles: true }));
+    addCatSel?.dispatchEvent(new Event("change", { bubbles: true }));
+    addSearchIn?.dispatchEvent(new Event("input", { bubbles: true }));
+  });
 
   // also save on explicit target edits and tab clicks
   document.getElementById("targetsForm")?.addEventListener("input", () => {

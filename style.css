@@ -1021,3 +1021,12 @@ dialog > .picker input[type="range"] {
 #librarySection .lib-card:hover {
   border-color: #3a4b66;
 }
+
+.library-filters .btn-small,
+.picker header .btn-small {
+    position: relative;
+  right: 250x;
+  top: calc(var(--sum-pad-top) + var(--sum-row-h) / 23);
+  transform: translateY(+50%);
+  z-index: 2;
+}

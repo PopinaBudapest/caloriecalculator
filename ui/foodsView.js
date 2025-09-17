@@ -496,6 +496,17 @@ export function initFoodsView(store, Core) {
     if (ingKcal) ingKcal.value = String(kcal); // always overwrite on macro change
   });
 
+  // Food Library reset button
+  const libResetBtn = document.getElementById("libResetFiltersBtn");
+
+  libResetBtn?.addEventListener("click", () => {
+    if (libFilter) libFilter.value = "all";
+    if (libCatSel) libCatSel.value = "all";
+    if (libSearch) libSearch.value = "";
+    // re-render after resetting
+    renderLibrary();
+  });
+
   // submit (create or update)
   addForm?.addEventListener("submit", (e) => {
     e.preventDefault();
